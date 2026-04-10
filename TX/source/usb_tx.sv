@@ -7,5 +7,5 @@ module usb_tx(
     input logic [2:0] tx_packet,
     output logic dp_out, dm_out, get_tx_packet_data, tx_error, tx_transfer_active
 );
-    //TODO
+    
 endmodule
