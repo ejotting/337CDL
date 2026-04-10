@@ -7,6 +7,7 @@ module data_buffer(
     output logic [6:0] buffer_occupancy
 );
     logic [6:0] tx_occupancy, next_tx_occupancy, rx_occupany, next_rx_occupancy;
+    logic [511:0] tx, rx, next_tx, next_rx;
 
     
     //tx comb
@@ -57,12 +58,44 @@ module data_buffer(
         if(!n_rst) begin
             tx <= '0;
             rx <= '0;
+            tx_occupancy <= '0;
+            rx_occupancy <= '0;
         end
         else begin
             tx <= next_tx;
             rx <= next_rx;
+            tx_occupancy <= next_tx_occupancy;
+            rx_occupancy <= next_rx_occupancy;
         end
     end
 
-    always_comb
+    always_comb begin
+        tx_packet_data = '0;
+
+        //legal pop
+        if (!(tx_occupancy == 0 && get_tx_packet_data)) begin
+            tx_packet_data = tx[tx_occupancy*8 +: 8];
+        end
+
+        //legal push
+        if (!(tx_occupancy == 64 && store_tx_data)) begin
+            tx_packet_data = tx[7:0];
+        end
+    end
+
+    always_comb begin
+        rx_data = '0;
+
+        //legal pop
+        if (!(rx_occupancy == 0 && get_rx_data)) begin
+            rx_data = rx[rx_occupancy*8 +: 8];
+        end
+
+        //legal push
+        if (!(rx_occupancy == 64 && store_rx_packet_data)) begin
+            rx_data = rx[7:0];
+        end
+    end
+
+    assign buffer_occupancy = tx_occupancy + rx_occupancy;
 endmodule
