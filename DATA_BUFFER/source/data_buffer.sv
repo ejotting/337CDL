@@ -74,7 +74,7 @@ module data_buffer(
 
         //legal pop
         if (tx_occupancy != '0 && get_tx_packet_data) begin
-            tx_packet_data = tx[tx_occupancy*8 +: 8];
+            tx_packet_data = tx[(tx_occupancy-1)*8 +: 8];
         end
 
         //legal push
@@ -88,7 +88,7 @@ module data_buffer(
 
         //legal pop
         if (rx_occupancy != '0 && get_rx_data) begin
-            rx_data = rx[rx_occupancy*8 +: 8];
+            rx_data = rx[(rx_occupancy-1)*8 +: 8];
         end
 
         //legal push
