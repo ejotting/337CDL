@@ -10,7 +10,7 @@ module crc_generate(
     always_comb begin
         //default
         next_crc = crc;
-        shifted = {crc[14:0], 0};
+        shifted = {crc[14:0], 1'b0};
         
         //if new data payload is being sent & data clk is at its edge
         if (enable_crc && strobe) begin 
@@ -25,7 +25,7 @@ module crc_generate(
 
     always_ff @(posedge clk or negedge n_rst) begin
         if (!n_rst) begin
-            crc <= 16'FFFF;
+            crc <= 16'hFFFF;
         end
         else begin
             crc <= next_crc;

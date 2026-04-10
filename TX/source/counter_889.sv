@@ -2,11 +2,13 @@
 
 module counter_889(
     input logic clk, n_rst, count_enable, clear_889, tx_transfer_active,
-    output logic count, strobe, data_done
+    output logic [4:0] count, 
+    output logic strobe, data_done
 );
     logic phase1, phase2, phase3; 
     logic count889; //strobe goes HIGH on 8, 16, 25
-    logic next_count, next_strobe;
+    logic [4:0]next_count;
+    logic next_strobe;
 
     always_comb begin
         //default
@@ -51,8 +53,8 @@ module counter_889(
     flex_counter #(.SIZE(4)) dataDoneCounter(
         .clk(clk), 
         .n_rst(n_rst),
-        .clear(~tx_transfer_active), 
-        .count_enable(count_enable && tx_transfer_active), 
+        .clear(strobe && ~tx_transfer_active), // TODO
+        .count_enable(strobe && tx_transfer_active), // TODO
         .rollover_val(4'd8), 
         .count_out(), 
         .rollover_flag(data_done));

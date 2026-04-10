@@ -6,7 +6,7 @@ module data_buffer(
     output logic [7:0] tx_packet_data, rx_data,
     output logic [6:0] buffer_occupancy
 );
-    logic [6:0] tx_occupancy, next_tx_occupancy, rx_occupany, next_rx_occupancy;
+    logic [6:0] tx_occupancy, next_tx_occupancy, rx_occupancy, next_rx_occupancy;
     logic [511:0] tx, rx, next_tx, next_rx;
 
     
@@ -21,12 +21,12 @@ module data_buffer(
         end
         
         //if legal pop
-        if (!(tx_occupancy == '0 && get_tx_packet_data)) begin
+        if (tx_occupancy != '0 && get_tx_packet_data) begin
             next_tx_occupancy = tx_occupancy - 1;
         end
 
         //if legal push
-        if (!(tx_occupancy == 7'd64 && store_tx_data)) begin
+        if (tx_occupancy != 7'd64 && store_tx_data) begin
             next_tx = {tx[503:0], tx_data};
             next_tx_occupancy = tx_occupancy + 1;
         end
@@ -43,12 +43,12 @@ module data_buffer(
         end
         
         //if legal pop
-        if (!(rx_occupancy == '0 && get_rx_data)) begin
+        if (rx_occupancy != '0 && get_rx_data) begin
             next_rx_occupancy = rx_occupancy - 1;
         end
 
         //if legal push
-        if (!(rx_occupancy == 7'd64 && store_rx_packet_data)) begin
+        if (rx_occupancy != 7'd64 && store_rx_packet_data) begin
             next_rx = {rx[503:0], rx_packet_data};
             next_rx_occupancy = rx_occupancy + 1;
         end
@@ -73,12 +73,12 @@ module data_buffer(
         tx_packet_data = '0;
 
         //legal pop
-        if (!(tx_occupancy == 0 && get_tx_packet_data)) begin
+        if (tx_occupancy != '0 && get_tx_packet_data) begin
             tx_packet_data = tx[tx_occupancy*8 +: 8];
         end
 
         //legal push
-        if (!(tx_occupancy == 64 && store_tx_data)) begin
+        if (tx_occupancy != 7'd64 && store_tx_data) begin
             tx_packet_data = tx[7:0];
         end
     end
@@ -87,12 +87,12 @@ module data_buffer(
         rx_data = '0;
 
         //legal pop
-        if (!(rx_occupancy == 0 && get_rx_data)) begin
+        if (rx_occupancy != '0 && get_rx_data) begin
             rx_data = rx[rx_occupancy*8 +: 8];
         end
 
         //legal push
-        if (!(rx_occupancy == 64 && store_rx_packet_data)) begin
+        if (rx_occupancy != 7'd64 && store_rx_packet_data) begin
             rx_data = rx[7:0];
         end
     end
