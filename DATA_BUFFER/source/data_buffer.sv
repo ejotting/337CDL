@@ -1,101 +1,76 @@
 `timescale 1ns / 10ps
 
 module data_buffer(
-    input logic clk, n_rst, store_tx_data, get_tx_packet_data, clear, store_rx_packet_data, get_rx_data,
+    input logic clk, n_rst, store_tx_data, get_tx_packet_data, clear, flush, store_rx_packet_data, get_rx_data,
     input logic [7:0] tx_data, rx_packet_data,
     output logic [7:0] tx_packet_data, rx_data,
     output logic [6:0] buffer_occupancy
 );
-    logic [6:0] tx_occupancy, next_tx_occupancy, rx_occupancy, next_rx_occupancy;
-    logic [511:0] tx, rx, next_tx, next_rx;
 
-    
-    //tx comb
-    always_comb begin
-        next_tx = tx;
-        next_tx_occupancy = tx_occupancy;
-
-        if (clear) begin
-            next_tx = '0;
-            next_tx_occupancy = '0;
-        end
-        
-        //if legal pop
-        if (tx_occupancy != '0 && get_tx_packet_data) begin
-            next_tx_occupancy = tx_occupancy - 1;
-        end
-
-        //if legal push
-        if (tx_occupancy != 7'd64 && store_tx_data) begin
-            next_tx = {tx[503:0], tx_data};
-            next_tx_occupancy = tx_occupancy + 1;
-        end
-    end
-
-    //rx comb
-    always_comb begin
-        next_rx = rx;
-        next_rx_occupancy = rx_occupancy;
-
-        if (clear) begin
-            next_rx = '0;
-            next_rx_occupancy = '0;
-        end
-        
-        //if legal pop
-        if (rx_occupancy != '0 && get_rx_data) begin
-            next_rx_occupancy = rx_occupancy - 1;
-        end
-
-        //if legal push
-        if (rx_occupancy != 7'd64 && store_rx_packet_data) begin
-            next_rx = {rx[503:0], rx_packet_data};
-            next_rx_occupancy = rx_occupancy + 1;
-        end
-    end
+    logic [511:0] queue, next_queue;
+    logic [6:0] occupancy, next_occupancy;
+    logic [8:0] read_ptr, next_read_ptr;
+    logic [8:0] write_ptr, next_write_ptr;
 
     always_ff @(posedge clk or negedge n_rst) begin
-        if(!n_rst) begin
-            tx <= '0;
-            rx <= '0;
-            tx_occupancy <= '0;
-            rx_occupancy <= '0;
+        if (!n_rst) begin
+            queue <= '0;
+            occupancy <= 7'd0;
+            read_ptr <= 9'd7;
+            write_ptr <= 9'd7;
         end
         else begin
-            tx <= next_tx;
-            rx <= next_rx;
-            tx_occupancy <= next_tx_occupancy;
-            rx_occupancy <= next_rx_occupancy;
+            queue <= next_queue;
+            occupancy <= next_occupancy;
+            read_ptr <= next_read_ptr;
+            write_ptr <= next_write_ptr;
         end
     end
 
     always_comb begin
-        tx_packet_data = '0;
+        next_queue = queue;
+        next_occupancy = occupancy;
+        next_read_ptr = read_ptr;
+        next_write_ptr = write_ptr;
 
-        //legal pop
-        if (tx_occupancy != '0 && get_tx_packet_data) begin
-            tx_packet_data = tx[(tx_occupancy-1)*8 +: 8];
+        tx_packet_data = 8'b0;
+        rx_data = 8'b0;
+        buffer_occupancy = occupancy;
+
+        if (occupancy > 0) begin //if queue is not empty
+            tx_packet_data = queue[read_ptr -: 8];
+            rx_data = queue[read_ptr -: 8];
         end
 
-        //legal push
-        if (tx_occupancy != 7'd64 && store_tx_data) begin
-            tx_packet_data = tx[7:0];
+        if (clear || flush) begin
+            next_queue = '0;
+            next_occupancy = 7'd0;
+            next_read_ptr = 9'd7;
+            next_write_ptr = 9'd7;
+        end
+        else begin
+            //legal write
+            if (store_tx_data && (occupancy < 7'd64)) begin
+                next_queue[write_ptr -: 8] = tx_data;
+                next_occupancy = occupancy + 1'b1;
+                next_write_ptr = write_ptr + 9'd8; //shift write index
+            end
+            else if (store_rx_packet_data && (occupancy < 7'd64)) begin
+                next_queue[write_ptr -: 8] = rx_packet_data;
+                next_occupancy = occupancy + 1'b1;
+                next_write_ptr = write_ptr + 9'd8;
+            end
+
+            //legal read
+            if (get_tx_packet_data && (occupancy > 0)) begin
+                next_occupancy = occupancy - 1'b1;
+                next_read_ptr = read_ptr + 9'd8; //shift read index
+            end
+            else if (get_rx_data && (occupancy > 0)) begin
+                next_occupancy = occupancy - 1'b1;
+                next_read_ptr = read_ptr + 9'd8;
+            end
         end
     end
 
-    always_comb begin
-        rx_data = '0;
-
-        //legal pop
-        if (rx_occupancy != '0 && get_rx_data) begin
-            rx_data = rx[(rx_occupancy-1)*8 +: 8];
-        end
-
-        //legal push
-        if (rx_occupancy != 7'd64 && store_rx_packet_data) begin
-            rx_data = rx[7:0];
-        end
-    end
-
-    assign buffer_occupancy = tx_occupancy + rx_occupancy;
 endmodule
