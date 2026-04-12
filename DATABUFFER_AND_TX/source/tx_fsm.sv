@@ -9,7 +9,6 @@ module fsm(
     output logic get_tx_packet_data, tx_transfer_active, tx_error, end_of_packet, load_enable,
     output logic [7:0] data_out
 );
-    //TODO
     typedef enum logic [4:0] {
         IDLE, LOAD_SYNC, SYNC, LOAD_PID, PID, GET_DATA, LOAD_DATA, SEND_DATA,
         LOAD_CRC1, CRC1, LOAD_CRC2, CRC2, LOAD_EOP, EOP, ERROR

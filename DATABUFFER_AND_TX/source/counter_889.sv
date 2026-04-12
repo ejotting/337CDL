@@ -5,8 +5,6 @@ module counter_889(
     output logic [4:0] count, 
     output logic strobe, data_done
 );
-    logic phase1, phase2, phase3; 
-    logic count889; //strobe goes HIGH on 8, 16, 25
     logic [4:0]next_count;
     logic next_strobe;
 

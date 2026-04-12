@@ -13,8 +13,8 @@ module nrzi_encoder(
 
         if(strobe) begin
             if (!end_of_packet && serial_in == 0) begin
-                next_dp_out = !dp_out;
-                next_dm_out = !dm_out;
+                next_dp_out = ~dp_out;
+                next_dm_out = ~dm_out;
             end
 
             //in EOP state, the serial data from data_out is 8'b11111100 in order to pull dp_out and dm_out both LOW for two periods
@@ -28,9 +28,7 @@ module nrzi_encoder(
                 next_dm_out = 0;	
             end
 
-            //else if (!end_of_packet && serial_in == 1)
-            //  next_dp_out = dp_out;
-            //  next_dm_out = dm_out;
+            //else if (!end_of_packet && serial_in == 1), then dp & dm stay the same
         end
     end
 

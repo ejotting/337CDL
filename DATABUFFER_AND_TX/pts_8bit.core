@@ -7,13 +7,15 @@ filesets:
         files:
             - "source/pts_8bit.sv"
         file_type: systemVerilogSource
-        # depend:
+        depend:
         #     - "fusesoc:core:name"
+            - "u337mg235:ece337:flex_sr:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
             - "u337mg235:ece337:pts_8bit_syn"
+            - "u337mg235:ece337:flex_sr:1.0.0"
 
     tb:
         files:
@@ -24,6 +26,7 @@ filesets:
         file_type: systemVerilogSource
         depend:
             - "u337mg235:ece337:questafiles"
+            - "u337mg235:ece337:flex_sr:1.0.0"
 
     synfiles:
         files:

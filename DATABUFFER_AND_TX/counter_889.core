@@ -7,13 +7,15 @@ filesets:
         files:
             - "source/counter_889.sv"
         file_type: systemVerilogSource
-        # depend:
+        depend:
         #     - "fusesoc:core:name"
+            - "u337mg235:ece337:flex_counter:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
             - "u337mg235:ece337:counter_889_syn"
+            - "u337mg235:ece337:flex_counter:1.0.0"
 
     tb:
         files:
@@ -24,6 +26,7 @@ filesets:
         file_type: systemVerilogSource
         depend:
             - "u337mg235:ece337:questafiles"
+            - "u337mg235:ece337:flex_counter:1.0.0"
 
     synfiles:
         files:
