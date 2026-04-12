@@ -53,7 +53,7 @@ module counter_889(
     flex_counter #(.SIZE(4)) dataDoneCounter(
         .clk(clk), 
         .n_rst(n_rst),
-        .clear(strobe && ~tx_transfer_active), // TODO
+        .clear((strobe && ~tx_transfer_active)| ~clear_889), // TODO
         .count_enable(strobe && tx_transfer_active), // TODO
         .rollover_val(4'd8), 
         .count_out(), 

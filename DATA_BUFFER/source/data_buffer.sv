@@ -42,7 +42,7 @@ module data_buffer(
             rx_data = queue[read_ptr -: 8];
         end
 
-        if (clear || flush) begin
+        if (clear || flush) begin //if ahb sub wants to clear or if rx wants to flush
             next_queue = '0;
             next_occupancy = 7'd0;
             next_read_ptr = 9'd7;

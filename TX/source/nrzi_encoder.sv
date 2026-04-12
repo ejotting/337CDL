@@ -27,6 +27,10 @@ module nrzi_encoder(
                 next_dp_out = 1;
                 next_dm_out = 0;	
             end
+
+            //else if (!end_of_packet && serial_in == 1)
+            //  next_dp_out = dp_out;
+            //  next_dm_out = dm_out;
         end
     end
 
