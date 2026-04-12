@@ -1,6 +1,6 @@
 `timescale 1ns / 10ps
 
-module fsm(
+module tx_fsm(
     input logic [2:0] tx_packet,
     input logic [6:0] buffer_occupancy,
     input logic data_done,

@@ -1,7 +1,7 @@
 `timescale 1ns / 10ps
 /* verilator coverage_off */
 
-module tb_fsm ();
+module tb_tx_fsm ();
 
     localparam CLK_PERIOD = 2.5ns;
 
@@ -32,7 +32,7 @@ module tb_fsm ();
     end
     endtask
 
-    fsm #() DUT (.*);
+    ftx_fsm #() DUT (.*);
 
     initial begin
         n_rst = 1;
