@@ -13,35 +13,31 @@ module counter_889(
     always_comb begin
         //default
         next_count = count;
-        next_strobe = strobe;
-
-        phase1 = (count + 1) < 8;
-        phase2 = (count + 1) > 8 && (count + 1) < 16;
-        phase3 = (count + 1) > 16 && (count + 1) < 25;
-
-        count889 = ((count + 1) == 8) | ((count + 1) == 16) | ((count + 1) == 25); 
+        next_strobe = 0;
 
         if (clear_889) begin
             next_count = 0;
             next_strobe = 0;
         end
-        else if ((phase1 | phase2 | phase3) && count_enable) begin
-            next_count = count + 1;
-            next_strobe = 0;
-        end
-        else if (count889 && count_enable) begin
-            next_count = count + 1;
-            next_strobe = 1;
-        end
-        else if ((count + 1) > 25 && count_enable) begin
-            next_count = 1;
-            next_strobe = 0;
+        else if (count_enable) begin
+            if ((count + 1) == 5'd8 || (count + 1) == 5'd16 || (count + 1) == 5'd25) begin //data clk
+                next_count  = count + 1'b1;
+                next_strobe = 1'b1;
+            end
+            else if ((count + 1) > 5'd25) begin //rollover from 25->1
+                next_count  = 5'd1;
+                next_strobe = 1'b0;
+            end
+            else begin //normal count increment
+                next_count  = count + 1'b1;
+                next_strobe = 1'b0;
+            end
         end
     end
 
     always_ff @(posedge clk or negedge n_rst) begin
         if (!n_rst) begin
-            count <= 0;
+            count <= '0;
             strobe <= 0;
         end
         else begin
@@ -53,7 +49,7 @@ module counter_889(
     flex_counter #(.SIZE(4)) dataDoneCounter(
         .clk(clk), 
         .n_rst(n_rst),
-        .clear((strobe && ~tx_transfer_active)| ~clear_889), // TODO
+        .clear((strobe && ~tx_transfer_active)||clear_889), // TODO
         .count_enable(strobe && tx_transfer_active), // TODO
         .rollover_val(4'd8), 
         .count_out(), 
