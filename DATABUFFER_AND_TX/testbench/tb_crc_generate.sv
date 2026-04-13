@@ -47,13 +47,15 @@ module tb_crc_generate ();
         data_in = bit_val;
         enable_crc = 1; //this is when we start loading data & sending data (fsm states)
         strobe = 1;
-        @(negedge clk); //crc begins to calculate by shifting
+        @(negedge clk); //crc begins to calculate by shifting. remember this only occurs on the data clk
         strobe = 0;
-        @(negedge clk);   
+        repeat(2) begin //this replicates when system clk is going but data clk isnt strobed
+            @(negedge clk);  
+        end 
     end
     endtask
 
-    // DUT instance
+    //DUT instance
     crc_generate DUT (
         .clk(clk),
         .n_rst(n_rst),
@@ -67,8 +69,9 @@ module tb_crc_generate ();
         n_rst = 1;
         initialize;
         reset_dut;
+        @(negedge clk);
 
-        $display("Send in 8'b10100110");
+        $display("Send in 8'b01100101");
         send_bit(1);
         send_bit(0);
         send_bit(1);
@@ -80,6 +83,21 @@ module tb_crc_generate ();
         enable_crc = 0;
         strobe = 0;
         @(negedge clk);
+        //repeat (3) @(negedge clk);
+
+        $display("Send in 8'b10100110");
+        send_bit(0);    
+        send_bit(1);  
+        send_bit(1);
+        send_bit(0);
+        send_bit(0);
+        send_bit(1);
+        send_bit(0);
+        send_bit(1);
+        enable_crc = 0;
+        strobe = 0;
+        repeat (3) @(negedge clk);
+
 
         $display("Strobe low (CRC does not change)");
         data_in = 1;

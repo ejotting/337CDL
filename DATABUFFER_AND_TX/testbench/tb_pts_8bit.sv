@@ -10,7 +10,7 @@ module tb_pts_8bit ();
         $dumpvars;
     end
 
-    // DUT portmap signals
+    //DUT portmap signals
     logic clk, n_rst, shift_enable, load_enable, serial_out;
     logic [7:0] parallel_in;
 
@@ -82,7 +82,7 @@ module tb_pts_8bit ();
     end
     endtask
 
-    // DUT instance
+    //DUT instance
     pts_8bit DUT (
         .clk(clk),
         .n_rst(n_rst),

@@ -47,9 +47,9 @@ module counter_889(
     flex_counter #(.SIZE(4)) dataDoneCounter(
         .clk(clk), 
         .n_rst(n_rst),
-        .clear((strobe && ~tx_transfer_active)||clear_889), // TODO
-        .count_enable(strobe && tx_transfer_active), // TODO
-        .rollover_val(4'd8), 
+        .clear((strobe && ~tx_transfer_active)||clear_889), 
+        .count_enable(strobe && tx_transfer_active), 
+        .rollover_val(4'd8), //TODO double check if i need to count to 8 or 9 for packet done.
         .count_out(), 
         .rollover_flag(data_done));
 endmodule
