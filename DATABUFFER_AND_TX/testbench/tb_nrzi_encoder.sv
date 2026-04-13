@@ -43,7 +43,7 @@ module tb_nrzi_encoder ();
     end
     endtask
 
-    // DUT instance
+    //DUT instance
     nrzi_encoder DUT (
         .clk(clk),
         .n_rst(n_rst),

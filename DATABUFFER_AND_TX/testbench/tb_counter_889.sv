@@ -43,7 +43,7 @@ module tb_counter_889 ();
     end
     endtask
 
-    // DUT instance
+    //DUT instance
     counter_889 DUT (
         .clk(clk),
         .n_rst(n_rst),
@@ -90,7 +90,7 @@ module tb_counter_889 ();
         $display("Check data_done cleared (when not transferring data)");
         count_enable = 1;
         tx_transfer_active = 0;
-        repeat(2) begin
+        repeat(20) begin
             @(negedge clk);
         end
 
