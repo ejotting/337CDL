@@ -1,27 +1,25 @@
 CAPI=2:
-name: "team066:ece337:data_clk_gen:1.0.0"
+name: "team066:ece337:flex_ctr:1.0.0"
 description: ""
 
 filesets:
     rtl:
         files:
-            - "source/data_clk_gen.sv"
+            - "source/flex_ctr.sv"
         file_type: systemVerilogSource
         # depend:
         #     - "fusesoc:core:name"
-        depend:
-            - "team066:ece337:flex_ctr:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
-            - "team066:ece337:data_clk_gen_syn"
+            - "team066:ece337:flex_ctr_syn"
 
     tb:
         files:
-            - "testbench/tb_data_clk_gen.sv"
-            - "waves/data_clk_gen.do": { file_type: user }
-            - "waves/data_clk_gen.gtkw": { file_type: user }
+            - "testbench/tb_flex_ctr.sv"
+            - "waves/flex_ctr.do": { file_type: user }
+            - "waves/flex_ctr.gtkw": { file_type: user }
             # - "data/file.txt": { file_type: user }
         file_type: systemVerilogSource
         depend:
@@ -29,7 +27,7 @@ filesets:
 
     synfiles:
         files:
-            - "scripts/syn_data_clk_gen.tcl"
+            - "scripts/syn_flex_ctr.tcl"
         file_type: tclSource
         depend:
             - "team066:ece337:synfiles"
@@ -38,21 +36,21 @@ targets:
     default: &default
         filesets:
             - rtl
-        toplevel: data_clk_gen
+        toplevel: flex_ctr
 
     sim: &sim
         <<: *default
         default_tool: verilator
         filesets_append:
             - tb
-        toplevel: tb_data_clk_gen
+        toplevel: tb_flex_ctr
         tools:
             modelsim:
                 vsim_options:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
-                    - -do "source waves.tcl ; load_wave waves/data_clk_gen.do"
+                    - -do "source waves.tcl ; load_wave waves/flex_ctr.do"
                     - -onfinish stop
                     - -do "set PrefSource(OpenOnFinish) 0 ; set PrefMain(LinePrefix) \"\" ; set PrefMain(colorizeTranscript) 1"
                     - -coverage
@@ -85,7 +83,7 @@ targets:
         filesets_append:
             - synfiles
         default_tool: design_compiler
-        toplevel: data_clk_gen
+        toplevel: flex_ctr
         tools:
             design_compiler:
                 script_dir: "src/team066_ece337_synfiles_0"

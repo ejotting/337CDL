@@ -22,20 +22,19 @@ always_ff @(posedge clk or negedge n_rst) begin
     end
 end
 
-flex_counter #(.SIZE(3)) FIRSTSAMPLE (.clk(clk),.n_rst(n_rst),.clear(new_edge),.count_enable(start_count1),
+flex_ctr #(.SIZE(3)) FIRSTSAMPLE (.clk(clk),.n_rst(n_rst),.clear(new_edge),.count_enable(start_count1),
 .rollover_val(3'd4),.count_out(count_out1),.rollover_flag(rollover));
 
-flex_counter #(.SIZE(5)) EIGHTEIGHTNINE (.clk(clk),.n_rst(n_rst),.clear(new_edge),.count_enable(start_count2),
+flex_ctr #(.SIZE(5)) EIGHTEIGHTNINE (.clk(clk),.n_rst(n_rst),.clear(new_edge),.count_enable(start_count2),
 .rollover_val(5'd25),.count_out(count_out2));
 
 always_comb begin
 
-    if(count_out1 == 3'd3) nsample_the_data = 1'b1;
+    if(count_out1 == 3'd3 || count_out2 == 5'd7 || count_out2 == 5'd15 || count_out2 == 5'd24) nsample_the_data = 1'b1;
     else nsample_the_data = 1'b0;
 
     if(count_out2 > 5'd5) ndata_out = 1'b1;
     else ndata_out = 1'b0;
-    
 
 end
 
