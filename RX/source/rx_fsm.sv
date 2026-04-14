@@ -22,13 +22,13 @@ module rx_fsm #(
 
 );
 
-logic [3:0]count_out;
+logic [4:0]count_out;
 logic clear;
 
-flex_ctr #(.SIZE(4)) TIMER (.clk(clk),.n_rst(n_rst),.count_enable(sample_the_data),
+flex_ctr #(.SIZE(5)) TIMER (.clk(clk),.n_rst(n_rst),.count_enable(sample_the_data),
 .clear(clear),.count_out(count_out));
 
-typedef enum logic [3:0] {IDLE, SYNC, TOKEN, ACK, DATA, CRC_CHECK5, 
+typedef enum logic [3:0] {IDLE, SYNC, TOKEN, ACK, DATA1, DATA2, CRC_CHECK5, 
 CRC_CHECK16, EOP1, EOP2, DATA_READY, ERROR} state_t;
 
 state_t state, next_state;
@@ -53,17 +53,17 @@ always_comb begin
     end
     SYNC: begin
         next_state = SYNC;
-        if(count_out == 4'd8) begin
+        if(count_out == 5'd8) begin
             clear = 1;
             if(shift_reg_val == 8'd1 || shift_reg_val == 8'd2) next_state = TOKEN;
             else if(shift_reg_val == 8'd3) next_state = ACK;
-            else if(shift_reg_val == 8'd4 || shift_reg_val == 8'd5) next_state = DATA;
+            else if(shift_reg_val == 8'd4 || shift_reg_val == 8'd5) next_state = DATA1;
             else next_state = ERROR;
         end
     end
     TOKEN: begin
         next_state = TOKEN;
-        if(count_out == 4'd11) begin
+        if(count_out == 5'd11) begin
             clear = 1;
             if(shift_reg_val[15:5] == 11'b11001100000) next_state = CRC_CHECK5;
             else next_state = IDLE;
@@ -72,9 +72,15 @@ always_comb begin
     ACK: begin
         next_state = EOP1;
     end
-    DATA: begin
-        next_state = DATA;
-         
+    DATA1: begin
+        next_state = DATA1;
+        if(count_out == 5'd16) begin next_state = DATA2; clear = 1; end
+    end
+    DATA2: begin
+        next_state = DATA2;
+        start16 = 1;
+        if(count_out == 5'd8) begin store_rx_packet_data = 1; clear = 1; end
+        if(eof && sample_the_data) next_state = CRC_CHECK16;
     end
     CRC_CHECK5: begin
         next_state = CRC_CHECK5;
@@ -84,20 +90,30 @@ always_comb begin
         end
     end
     CRC_CHECK16: begin
-        if(shift_reg_val == crc16) next_state = IDLE;
+        if(shift_reg_val == crc16) next_state = DATA_EOP;
         else next_state = ERROR;
     end
     EOP1: begin
 
+        if(sample_the_data && eof) next_state = EOP2;
+        else if(sample_the_data) next_state = ERROR;
     end
     EOP2: begin
-
+        if(sample_the_data && eof) next_state = IDLE;
+        else if(sample_the_data) next_state = ERROR;
+    end
+    DATA_EOP: begin
+        next_state = DATA_EOP;
+        if(sample_the_data && eof) next_state = DATA_READY;
     end
     DATA_READY: begin
-
+        next_state = IDLE;
+        rx_data_ready = 1;
     end
     ERROR: begin
-
+        next_state = IDLE;
+        flush = 1;
+        rx_error = 1;
     end
     default: begin
         next_state = IDLE;
