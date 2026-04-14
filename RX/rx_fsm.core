@@ -9,6 +9,8 @@ filesets:
         file_type: systemVerilogSource
         # depend:
         #     - "fusesoc:core:name"
+        depend:
+            - "team066:ece337:flex_ctr:1.0.0"
 
     synth:
         depend:

@@ -34,14 +34,14 @@ module ahb_usb (
     .data_out(data_out),.sample_the_data(sample_the_data));
 
     shift_reg SHFTREG (.clk(clk),.sample_the_data(sample_the_data),
-    .valid_bit(valid_bit),.data_out(data_out),.n_rst(n_rst),
+    .valid_bit(valid_bit && !eof),.data_out(data_out),.n_rst(n_rst),
     .shift_reg_val(shift_reg_val),.rx_data(rx_data));
 
     rx_fsm CTRLOGIC (.clk(clk),.n_rst(n_rst),.shift_reg_val(shift_reg_val),
     .buffer_occupancy(buffer_occupancy),.sample_the_data(sample_the_data),
     .crc5(crc5),.crc16(crc16),.eof(eof),.flush(flush),.rx_data_ready(rx_data_ready),
     .store_rx_packet_data(store_rx_packet_data),.rx_packet(rx_packet),.rx_error(rx_error),
-    .rx_transfer_active(rx_transfer_active));
+    .rx_transfer_active(rx_transfer_active),.valid_bit(valid_bit));
 
 endmodule
 
