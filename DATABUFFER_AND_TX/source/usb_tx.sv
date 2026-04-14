@@ -34,7 +34,6 @@ module usb_tx(
 
     //serial data that is taken bit-by-bit from the parallel data_out
     logic serial_data;
-
     crc_generate myCRC(
         .clk(clk),
         .n_rst(n_rst),
@@ -47,8 +46,8 @@ module usb_tx(
     pts_8bit myPTS(
         .clk(clk),
         .n_rst(n_rst),
-        .shift_enable(strobe), //TODO changed from (strobe) -> (strobe & ~data_done)
-        .load_enable(load_enable), //TODO changed from (load_en) -> (load_en & strobe)
+        .shift_enable(strobe), 
+        .load_enable(load_enable), 
         .parallel_in(data_out),
         .serial_out(serial_data)
     );
@@ -64,8 +63,7 @@ module usb_tx(
     );
 
     //counter output count
-    logic [4:0] count;
-
+    logic [4:0]count;
     counter_889 myCounter(
         .clk(clk),
         .n_rst(n_rst),
@@ -76,7 +74,4 @@ module usb_tx(
         .strobe(strobe),
         .data_done(data_done)
     );
-
-
-
 endmodule

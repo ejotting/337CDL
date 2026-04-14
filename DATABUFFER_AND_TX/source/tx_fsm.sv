@@ -11,7 +11,7 @@ module tx_fsm(
     //output logic count_enable,
     output logic [7:0] data_out
 );
-    typedef enum logic [4:0] {
+    typedef enum logic [4:0]{
         IDLE, LOAD_SYNC, SYNC, LOAD_PID, PID, GET_DATA, LOAD_DATA, SEND_DATA,
         LOAD_CRC1, CRC1, LOAD_CRC2, CRC2, LOAD_EOP, EOP, ERROR
     }state_t;
@@ -27,90 +27,82 @@ module tx_fsm(
     //next state logic block
     always_comb begin
         next_state = state;
-        //if (strobe) begin //must follow the data clk
-            case (state)
-                IDLE: begin
-                    if (strobe) begin
-                    if (((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy > 0)||(tx_packet == 3'd3 || tx_packet == 3'd4 || tx_packet == 3'd5))
-                        next_state = LOAD_SYNC;
-                    else if ((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy == 0)
-                        next_state = ERROR;
-                    end
+        case (state)
+            IDLE: begin
+                if (strobe) begin
+                if (((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy > 0)||(tx_packet == 3'd3 || tx_packet == 3'd4 || tx_packet == 3'd5))
+                    next_state = LOAD_SYNC;
+                else if ((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy == 0)
+                    next_state = ERROR;
                 end
-                LOAD_SYNC: begin
-                    next_state = SYNC;
-                end
-                SYNC: begin
-                    if (data_done)  
-                        next_state = LOAD_PID;
-                end
-                LOAD_PID: begin
-                    
-                        next_state = PID;
-                end
-                PID: begin
-                    //if (strobe) begin 
-                        if (data_done && (tx_packet == 3'd1 || tx_packet == 3'd2))
-                            next_state = GET_DATA;
-                        else if (data_done && (tx_packet == 3'd3 || tx_packet == 3'd4 || tx_packet == 3'd5))
-                            next_state = LOAD_EOP;
-                    //end
-                end
-                GET_DATA: begin
-                    next_state = LOAD_DATA;
-                end
-                LOAD_DATA: begin
-                    
-                    next_state = SEND_DATA;
-                end
-                SEND_DATA: begin
-                    if (data_done)
-                        next_state = LOAD_CRC1;
-                end
-                LOAD_CRC1: begin
-                    
-                    next_state = CRC1;
-                end
-                CRC1: begin
-                    if (data_done)
-                        next_state = LOAD_CRC2;
-                end
-                LOAD_CRC2: begin
-                  
-                    next_state = CRC2;
-                end
-                CRC2: begin
-                    if (data_done && buffer_occupancy > 0)
-                        next_state = GET_DATA;
-                    else if (data_done && buffer_occupancy == 0)
-                        next_state = LOAD_EOP;
-                end
-                LOAD_EOP: begin
-                 
-                    next_state = EOP;
-                end
-                EOP: begin
-                    if (data_done)
-                        next_state = IDLE;
-                end
-                ERROR: begin
-                    next_state = IDLE;
-                end
+            end
+            LOAD_SYNC: begin
+                next_state = SYNC;
+            end
+            SYNC: begin
+                if (data_done)  
+                    next_state = LOAD_PID;
+            end
+            LOAD_PID: begin                        
+                next_state = PID;
+            end
+            PID: begin
+                if (data_done && (tx_packet == 3'd1 || tx_packet == 3'd2))
+                    next_state = GET_DATA;
+                else if (data_done && (tx_packet == 3'd3 || tx_packet == 3'd4 || tx_packet == 3'd5))
+                    next_state = LOAD_EOP;
+            end
+            GET_DATA: begin
+                next_state = LOAD_DATA;
+            end
+            LOAD_DATA: begin
                 
-            endcase
-        //end
+                next_state = SEND_DATA;
+            end
+            SEND_DATA: begin
+                if (data_done)
+                    next_state = LOAD_CRC1;
+            end
+            LOAD_CRC1: begin
+                next_state = CRC1;
+            end
+            CRC1: begin
+                if (data_done)
+                    next_state = LOAD_CRC2;
+            end
+            LOAD_CRC2: begin
+                next_state = CRC2;
+            end
+            CRC2: begin
+                if (data_done && buffer_occupancy > 0)
+                    next_state = GET_DATA;
+                else if (data_done && buffer_occupancy == 0)
+                    next_state = LOAD_EOP;
+            end
+            LOAD_EOP: begin
+                next_state = EOP;
+            end
+            EOP: begin
+                if (data_done)
+                    next_state = IDLE;
+            end
+            ERROR: begin
+                next_state = IDLE;
+            end
+            
+        endcase
     end
 
     //output logic block
     always_comb begin 
         //default
-            get_tx_packet_data = 0;
-            data_out = '1;
-            tx_transfer_active = 0;
-            tx_error = 0;
-            enable_crc = 0;
-            end_of_packet = 0;
-            load_enable = 0;
+        get_tx_packet_data = 0;
+        data_out = '1;
+        tx_transfer_active = 0;
+        tx_error = 0;
+        enable_crc = 0;
+        end_of_packet = 0;
+        load_enable = 0;
         case (state)
             IDLE: begin
                 get_tx_packet_data = 0;
@@ -124,7 +116,7 @@ module tx_fsm(
             LOAD_SYNC: begin
                 get_tx_packet_data = 0;
                 data_out = 8'b10000000;
-                tx_transfer_active = 1; 
+                tx_transfer_active = 0; 
                 tx_error = 0;
                 enable_crc = 0;
                 end_of_packet = 0;
@@ -150,7 +142,7 @@ module tx_fsm(
                     3'd5: data_out = 8'b00011110;
                 endcase
 
-                tx_transfer_active = 1; //todo
+                tx_transfer_active = 1; 
                 tx_error = 0;
                 enable_crc = 0;
                 end_of_packet = 0;
@@ -265,5 +257,4 @@ module tx_fsm(
             end
         endcase
     end
-
 endmodule

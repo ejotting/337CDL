@@ -27,7 +27,6 @@ module nrzi_encoder(
                 next_dp_out = 1;
                 next_dm_out = 0;	
             end
-
             //else if (!end_of_packet && serial_in == 1), then dp & dm stay the same
         end
     end

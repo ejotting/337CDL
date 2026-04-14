@@ -81,9 +81,84 @@ module tb_data_buffer ();
         n_rst = 1;
         initialize;
         reset_dut;
+        @(negedge clk);
 
         //todo work on this
-        
+        $display("Pushing TX data until full");
+        store_tx_data = 1;
+        repeat(8) begin
+            tx_data = 8'hAA;
+            @(negedge clk);
+            tx_data = 8'hBB;
+            @(negedge clk);
+            tx_data = 8'hCC;
+            @(negedge clk);
+            tx_data = 8'hDD;
+            @(negedge clk);
+            tx_data = 8'h11;
+            @(negedge clk);
+            tx_data = 8'h22;
+            @(negedge clk);
+            tx_data = 8'h33;
+            @(negedge clk);
+            tx_data = 8'h44;
+            @(negedge clk);
+        end
+
+        $display("Pushing TX data when already full");
+        tx_data = 8'h99;
+        @(negedge clk);
+        store_tx_data = 0;
+
+        $display("Popping TX data until empty");
+        get_tx_packet_data = 1;
+        repeat(64) @(negedge clk);
+
+        $display("Popping TX data when already empty");
+        @(negedge clk);
+        get_tx_packet_data = 0;
+
+        $display("Pushing and popping RX data");
+        //push 4 times
+        store_rx_packet_data = 1;
+        rx_packet_data = 8'h88;
+        @(negedge clk);
+        rx_packet_data = 8'h77;
+        @(negedge clk);
+        rx_packet_data = 8'h66;
+        @(negedge clk);
+        rx_packet_data = 8'h55;
+        @(negedge clk);
+        store_rx_packet_data = 0;
+        //pop 1 time
+        get_rx_data = 1;
+        @(negedge clk);
+        get_rx_data = 0;
+        //push 1 time
+        store_rx_packet_data = 1;
+        rx_packet_data = 8'hEE;
+        @(negedge clk);
+        store_rx_packet_data = 0;
+        //pop 3 times
+        get_rx_data = 1;
+        repeat(3) @(negedge clk);
+        get_rx_data = 0;  
+
+        $display("Flush");
+        flush = 1;
+        @(negedge clk);
+        flush = 0;
+
+        $display("Clear");
+        store_rx_packet_data = 1;
+        rx_packet_data = 8'h88;
+        @(negedge clk);
+        rx_packet_data = 8'h77;
+        @(negedge clk);
+        store_rx_packet_data = 0;
+        clear = 1;
+        @(negedge clk);
+        clear = 0;
 
         $finish;
     end
