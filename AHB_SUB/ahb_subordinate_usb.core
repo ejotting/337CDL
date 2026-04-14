@@ -24,6 +24,7 @@ filesets:
         file_type: systemVerilogSource
         depend:
             - "team066:ece337:questafiles"
+            - "ece337:course-lib:ahb_model_updated"
 
     synfiles:
         files:
