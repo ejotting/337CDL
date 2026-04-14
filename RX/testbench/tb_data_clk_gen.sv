@@ -3,7 +3,7 @@
 
 module tb_data_clk_gen ();
 
-    localparam CLK_PERIOD = 10ns;
+    localparam CLK_PERIOD = 50ns;
 
     initial begin
         $dumpfile("waveform.vcd");

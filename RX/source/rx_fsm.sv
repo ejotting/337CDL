@@ -26,8 +26,12 @@ module rx_fsm #(
 
 logic [4:0]count_out;
 logic clear;
+
+logic enable;
+
+assign enable = sample_the_data && !eof && valid_bit;
 /* verilator lint_off PINMISSING */
-flex_ctr #(.SIZE(5)) TIMER (.clk(clk),.n_rst(n_rst),.count_enable(sample_the_data && !eof && valid_bit),
+flex_ctr #(.SIZE(5)) TIMER (.clk(clk),.n_rst(n_rst),.count_enable(enable),
 .clear(clear),.count_out(count_out));
 
 typedef enum logic [3:0] {IDLE, SYNC, TOKEN, ACK, DATA1, DATA2, CRC_CHECK5, 
