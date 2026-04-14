@@ -16,7 +16,6 @@ module rx_fsm #(
     output logic rx_data_ready,
     output logic store_rx_packet_data,
     output logic [2:0]rx_packet,
-    output logic [7:0]packet_data,
     output logic rx_error,
     output logic rx_transfer_active
 
