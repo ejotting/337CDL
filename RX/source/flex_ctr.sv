@@ -1,6 +1,6 @@
 `timescale 1ns / 10ps
 
-module flex_counter #(SIZE = 8) (
+module flex_ctr #(SIZE = 8) (
     input logic clk,
     input logic n_rst,
     input logic clear,

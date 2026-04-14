@@ -10,7 +10,9 @@ module tb_data_clk_gen ();
         $dumpvars;
     end
 
-    logic clk, n_rst;
+    logic clk, n_rst, new_edge;
+
+    data_clk_gen DUT (.clk(clk),.n_rst(n_rst),.new_edge(new_edge));
 
     // clockgen
     always begin
@@ -32,12 +34,32 @@ module tb_data_clk_gen ();
     end
     endtask
 
-    data_clk_gen #() DUT (.*);
 
     initial begin
         n_rst = 1;
-
+        new_edge = 0;
         reset_dut;
+        @(negedge clk);
+        new_edge = 1;
+        @(negedge clk);
+        new_edge = 0;
+        repeat(8) @(negedge clk);
+        new_edge = 1;
+        @(negedge clk);
+        new_edge = 0;
+        repeat(64) @(negedge clk);
+        new_edge = 1;
+        @(negedge clk);
+        new_edge = 0;
+        repeat(8) @(negedge clk);
+        new_edge = 1;
+        @(negedge clk);
+        new_edge = 0;
+        repeat(8) @(negedge clk);
+        new_edge = 1;
+        @(negedge clk);
+        new_edge = 0;
+        repeat(8) @(negedge clk);
 
         $finish;
     end
