@@ -1,27 +1,25 @@
 CAPI=2:
-name: "team066:ece337:rx_fsm:1.0.0"
+name: "team066:ece337:shift_reg:1.0.0"
 description: ""
 
 filesets:
     rtl:
         files:
-            - "source/rx_fsm.sv"
+            - "source/shift_reg.sv"
         file_type: systemVerilogSource
         # depend:
         #     - "fusesoc:core:name"
-        depend:
-            - "team066:ece337:flex_ctr:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
-            - "team066:ece337:rx_fsm_syn"
+            - "team066:ece337:shift_reg_syn"
 
     tb:
         files:
-            - "testbench/tb_rx_fsm.sv"
-            - "waves/rx_fsm.do": { file_type: user }
-            - "waves/rx_fsm.gtkw": { file_type: user }
+            - "testbench/tb_shift_reg.sv"
+            - "waves/shift_reg.do": { file_type: user }
+            - "waves/shift_reg.gtkw": { file_type: user }
             # - "data/file.txt": { file_type: user }
         file_type: systemVerilogSource
         depend:
@@ -29,7 +27,7 @@ filesets:
 
     synfiles:
         files:
-            - "scripts/syn_rx_fsm.tcl"
+            - "scripts/syn_shift_reg.tcl"
         file_type: tclSource
         depend:
             - "team066:ece337:synfiles"
@@ -38,21 +36,21 @@ targets:
     default: &default
         filesets:
             - rtl
-        toplevel: rx_fsm
+        toplevel: shift_reg
 
     sim: &sim
         <<: *default
         default_tool: verilator
         filesets_append:
             - tb
-        toplevel: tb_rx_fsm
+        toplevel: tb_shift_reg
         tools:
             modelsim:
                 vsim_options:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
-                    - -do "source waves.tcl ; load_wave waves/rx_fsm.do"
+                    - -do "source waves.tcl ; load_wave waves/shift_reg.do"
                     - -onfinish stop
                     - -do "set PrefSource(OpenOnFinish) 0 ; set PrefMain(LinePrefix) \"\" ; set PrefMain(colorizeTranscript) 1"
                     - -coverage
@@ -85,7 +83,7 @@ targets:
         filesets_append:
             - synfiles
         default_tool: design_compiler
-        toplevel: rx_fsm
+        toplevel: shift_reg
         tools:
             design_compiler:
                 script_dir: "src/team066_ece337_synfiles_0"
