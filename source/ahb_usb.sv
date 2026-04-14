@@ -22,5 +22,16 @@ module ahb_usb (
     output logic d_mode
 );
 
+    logic dm, dp, new_edge, eof, data_out, sample_the_data;
+
+    sync SYNC (.clk(clk),.n_rst(n_rst),.async_in(dp_in),.sync_out(dp));
+    sync SYNC (.clk(clk),.n_rst(n_rst),.async_in(dm_in),.sync_out(dm));
+
+    bit_decoder BITDECODE (.clk(clk),.n_rst(n_rst),.dp(dp),.dm(dm),
+    .new_edge(new_edge),.eof(eof));
+
+    data_clk_gen DATACLK (.clk(clk),.n_rst(n_rst),.new_edge(new_edge),
+    .data_out(data_out),.sample_the_data(sample_the_data));
+
 endmodule
 
