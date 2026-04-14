@@ -15,6 +15,11 @@ module tb_ahb_subordinate_usb ();
     localparam BURST_WRAP16 = 3'd6;
     localparam BURST_INCR16 = 3'd7;
 
+    localparam HTRANS_IDLE=2'd0;
+    localparam HTRANS_BUSY=2'd1;
+    localparam HTRANS_SEQ=2'd2;
+    localparam HTRANS_NONSEQ=2'd3;
+
     initial begin
         $dumpfile("waveform.fst");
         $dumpvars;
@@ -53,6 +58,45 @@ module tb_ahb_subordinate_usb ();
     logic hresp;
     logic hready;
 
+    logic TX_error,RX_error,RX_dataready;
+    logic RX_transferactive, TX_transferactive;
+    logic [2:0] RX_packet, TX_packet;
+    logic [7:0] RX_data,TX_data;
+    logic [6:0] bufferoccupancy;
+    logic clear, get_rx_data, store_tx_data,D_mode;
+
+    //usb sub
+    ahb_subordinate_usb #(
+        .ADDR_WIDTH(4),
+        .DATA_WIDTH(4)
+    ) DUT(
+        .clk(clk),
+        .n_rst(n_rst),
+        .hsel(hsel),
+        .haddr(haddr),
+        .hsize(hsize),
+        .htrans(htrans),
+        .hwrite(hwrite),
+        .hwdata(hwdata),
+        .hburst(hburst),
+        .hrdata(hdata),
+        .hresp(hresp),
+        .hready(hready),
+        .TX_error(TX_error),
+        .RX_error(RX_error),
+        .RX_dataready(RX_dataready),
+        .RX_transferactive(RX_transferactive),
+        .TX_transferactive(TX_transferactive),
+        .RX_packet(RX_packet),
+        .RX_data(RX_data),
+        .bufferoccupancy(bufferoccupancy),
+        .TX_packet(TX_packet),
+        .TX_data(TX_data),
+        .clear(clear),
+        .get_rx_data(get_rx_data),
+        .store_tx_data(store_tx_data),
+        .D_mode(D_mode)
+    );
     // bus model connections
     ahb_model_updated #(
         .ADDR_WIDTH(4),
