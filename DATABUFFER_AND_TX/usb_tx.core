@@ -7,13 +7,23 @@ filesets:
         files:
             - "source/usb_tx.sv"
         file_type: systemVerilogSource
-        # depend:
+        depend:
         #     - "fusesoc:core:name"
+            - "u337mg235:ece337:tx_fsm:1.0.0"
+            - "u337mg235:ece337:pts_8bit:1.0.0"
+            - "u337mg235:ece337:nrzi_encoder:1.0.0"
+            - "u337mg235:ece337:crc_generate:1.0.0"
+            - "u337mg235:ece337:counter_889:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
             - "u337mg235:ece337:usb_tx_syn"
+            - "u337mg235:ece337:tx_fsm:1.0.0"
+            - "u337mg235:ece337:pts_8bit:1.0.0"
+            - "u337mg235:ece337:nrzi_encoder:1.0.0"
+            - "u337mg235:ece337:crc_generate:1.0.0"
+            - "u337mg235:ece337:counter_889:1.0.0"
 
     tb:
         files:
@@ -24,6 +34,11 @@ filesets:
         file_type: systemVerilogSource
         depend:
             - "u337mg235:ece337:questafiles"
+            - "u337mg235:ece337:tx_fsm:1.0.0"
+            - "u337mg235:ece337:pts_8bit:1.0.0"
+            - "u337mg235:ece337:nrzi_encoder:1.0.0"
+            - "u337mg235:ece337:crc_generate:1.0.0"
+            - "u337mg235:ece337:counter_889:1.0.0"
 
     synfiles:
         files:

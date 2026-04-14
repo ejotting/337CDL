@@ -14,7 +14,9 @@ module usb_tx(
     logic end_of_packet, load_enable, enable_crc;
     logic [7:0] data_out;
 
-    fsm myFSM(
+    tx_fsm myFSM(
+        .clk(clk),
+        .n_rst(n_rst),
         .tx_packet(tx_packet), //
         .buffer_occupancy(buffer_occupancy), //
         .strobe(strobe),
@@ -30,12 +32,12 @@ module usb_tx(
         .data_out(data_out)
     );
 
-    //TODO continue to implement top level.
-
     //serial data that is taken bit-by-bit from the parallel data_out
     logic serial_data;
 
     crc_generate myCRC(
+        .clk(clk),
+        .n_rst(n_rst),
         .data_in(serial_data),
         .enable_crc(enable_crc),
         .strobe(strobe),
@@ -43,13 +45,17 @@ module usb_tx(
     );
 
     pts_8bit myPTS(
-        .shift_enable(strobe),
-        .load_enable(load_enable),
+        .clk(clk),
+        .n_rst(n_rst),
+        .shift_enable(strobe), //TODO changed from (strobe) -> (strobe & ~data_done)
+        .load_enable(load_enable), //TODO changed from (load_en) -> (load_en & strobe)
         .parallel_in(data_out),
         .serial_out(serial_data)
     );
 
     nrzi_encoder myNRZI(
+        .clk(clk),
+        .n_rst(n_rst),
         .serial_in(serial_data),
         .end_of_packet(end_of_packet),
         .strobe(strobe),
@@ -61,9 +67,11 @@ module usb_tx(
     logic [4:0] count;
 
     counter_889 myCounter(
-        .count_enable(tx_transfer_active), //todo check this again.
-        .clear_889(~tx_transfer_active), //todo
-        .tx_transfer_active(tx_transfer_active),
+        .clk(clk),
+        .n_rst(n_rst),
+        .count_enable(1'b1),
+        .clear_889(1'b0), 
+        .tx_transfer_active(tx_transfer_active), 
         .count(count),
         .strobe(strobe),
         .data_done(data_done)

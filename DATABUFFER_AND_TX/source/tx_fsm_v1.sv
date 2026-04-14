@@ -45,7 +45,7 @@ module tx_fsm(
                         next_state = LOAD_PID;
                 end
                 LOAD_PID: begin
-                    
+                    if(strobe)
                         next_state = PID;
                 end
                 PID: begin
@@ -60,7 +60,7 @@ module tx_fsm(
                     next_state = LOAD_DATA;
                 end
                 LOAD_DATA: begin
-                    
+                    if(strobe)
                     next_state = SEND_DATA;
                 end
                 SEND_DATA: begin
@@ -68,7 +68,7 @@ module tx_fsm(
                         next_state = LOAD_CRC1;
                 end
                 LOAD_CRC1: begin
-                    
+                    if(strobe)
                     next_state = CRC1;
                 end
                 CRC1: begin
@@ -76,7 +76,7 @@ module tx_fsm(
                         next_state = LOAD_CRC2;
                 end
                 LOAD_CRC2: begin
-                  
+                    if(strobe)
                     next_state = CRC2;
                 end
                 CRC2: begin
@@ -86,7 +86,7 @@ module tx_fsm(
                         next_state = LOAD_EOP;
                 end
                 LOAD_EOP: begin
-                 
+                    if(strobe)
                     next_state = EOP;
                 end
                 EOP: begin
@@ -150,7 +150,7 @@ module tx_fsm(
                     3'd5: data_out = 8'b00011110;
                 endcase
 
-                tx_transfer_active = 1; //todo
+                tx_transfer_active = 0; //todo
                 tx_error = 0;
                 enable_crc = 0;
                 end_of_packet = 0;
@@ -176,7 +176,7 @@ module tx_fsm(
             GET_DATA: begin
                 get_tx_packet_data = 1;
                 data_out = '1;
-                tx_transfer_active = 1;
+                tx_transfer_active = 0;
                 tx_error = 0;
                 enable_crc = 0;
                 end_of_packet = 0;
@@ -185,7 +185,7 @@ module tx_fsm(
             LOAD_DATA: begin
                 get_tx_packet_data = 0;
                 data_out = tx_packet_data;
-                tx_transfer_active = 1;
+                tx_transfer_active = 0;
                 tx_error = 0;
                 enable_crc = 1;
                 end_of_packet = 0;
@@ -203,7 +203,7 @@ module tx_fsm(
             LOAD_CRC1: begin
                 get_tx_packet_data = 0;
                 data_out = crc_out[7:0];
-                tx_transfer_active = 1;
+                tx_transfer_active = 0;
                 tx_error = 0;
                 enable_crc = 0;
                 end_of_packet = 0;
@@ -221,7 +221,7 @@ module tx_fsm(
             LOAD_CRC2: begin
                 get_tx_packet_data = 0;
                 data_out = crc_out[15:8];
-                tx_transfer_active = 1;
+                tx_transfer_active = 0;
                 tx_error = 0;
                 enable_crc = 0;
                 end_of_packet = 0;
@@ -239,7 +239,7 @@ module tx_fsm(
             LOAD_EOP: begin
                 get_tx_packet_data = 0;
                 data_out = 8'b11111100;
-                tx_transfer_active = 1;
+                tx_transfer_active = 0;
                 tx_error = 0;
                 enable_crc = 0;
                 end_of_packet = 1;

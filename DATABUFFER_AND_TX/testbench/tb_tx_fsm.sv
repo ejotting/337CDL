@@ -132,7 +132,9 @@ module tb_tx_fsm ();
         data_done_strobe;
         //IDLE
 
+        $display("DATA0");
         //TODO add more testcases
+        
 
         $finish;
     end

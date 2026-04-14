@@ -49,6 +49,24 @@ module tb_usb_tx ();
     end
     endtask
 
+    task set_inputs(
+        logic [6:0] bo, //buffer occupancy
+        logic [7:0] tpd, //tx packet data
+        logic [2:0] tp //tx packet (type)
+    );
+    begin
+        buffer_occupancy = bo;
+        tx_packet_data = tpd;
+        tx_packet = tp;
+    end
+    endtask
+
+    task one_data_clk;
+    begin
+        repeat(8) @(negedge clk);
+    end
+    endtask
+
     //DUT
     usb_tx DUT(
         .clk(clk),
@@ -67,9 +85,15 @@ module tb_usb_tx ();
         n_rst = 1;
         initialize;
         reset_dut;
+        @(negedge clk);
 
+        
+        $display("Transmit ACK");
+        set_inputs(7'd1, 8'b01100010, 3'd2);
+        repeat(260) @(negedge clk);
+        set_inputs(7'd0, 8'b10100111, 3'd2);
+        repeat(180) @(negedge clk);
         //todo complete this
-        $display("")
 
         $finish;
     end
