@@ -1,7 +1,7 @@
 `timescale 1ns / 10ps
 /* verilator coverage_off */
 
-module tb_bit_decoder ();
+module tb_ahb_usb ();
 
     localparam CLK_PERIOD = 10ns;
 
@@ -10,7 +10,7 @@ module tb_bit_decoder ();
         $dumpvars;
     end
 
-    logic clk, n_rst, dp, dm;
+    logic clk, n_rst;
 
     // clockgen
     always begin
@@ -32,33 +32,13 @@ module tb_bit_decoder ();
     end
     endtask
 
-    bit_decoder #() DUT (.clk(clk),.n_rst(n_rst),.dm(dm),.dp(dp));
+    ahb_usb #() DUT (.*);
 
     initial begin
         n_rst = 1;
-        dp = 0;
-        dm = 1;
 
         reset_dut;
-        repeat(8) @(negedge clk);
-        dp = ~dp;
-        dm = ~dm;
-        repeat(8) @(negedge clk);
-        dp = ~dp;
-        dm = ~dm;
-        repeat(8) @(negedge clk);
-        dp = ~dp;
-        dm = ~dm;
-        repeat(8) @(negedge clk);
-        dp = ~dp;
-        dm = ~dm;
-        repeat(64) @(negedge clk);
-        dp = ~dp;
-        dm = ~dm;
-        repeat(8) @(negedge clk);
-        dp = 0;
-        dm = 0;
-        repeat(8) @(negedge clk);
+
         $finish;
     end
 endmodule
