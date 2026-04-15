@@ -1,51 +1,33 @@
 CAPI=2:
-name: "u337mg235:ece337:usb_tx:1.0.0"
+name: "u337mg235:ece337:bit_stuff:1.0.0"
 description: ""
 
 filesets:
     rtl:
         files:
-            - "source/usb_tx.sv"
+            - "source/bit_stuff.sv"
         file_type: systemVerilogSource
-        depend:
+        # depend:
         #     - "fusesoc:core:name"
-            - "u337mg235:ece337:tx_fsm:1.0.0"
-            - "u337mg235:ece337:pts_8bit:1.0.0"
-            - "u337mg235:ece337:nrzi_encoder:1.0.0"
-            - "u337mg235:ece337:crc_generate:1.0.0"
-            - "u337mg235:ece337:counter_889:1.0.0"
-            - "u337mg235:ece337:bit_stuff:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
-            - "u337mg235:ece337:usb_tx_syn"
-            - "u337mg235:ece337:tx_fsm:1.0.0"
-            - "u337mg235:ece337:pts_8bit:1.0.0"
-            - "u337mg235:ece337:nrzi_encoder:1.0.0"
-            - "u337mg235:ece337:crc_generate:1.0.0"
-            - "u337mg235:ece337:counter_889:1.0.0"
-            - "u337mg235:ece337:bit_stuff:1.0.0"
+            - "u337mg235:ece337:bit_stuff_syn"
 
     tb:
         files:
-            - "testbench/tb_usb_tx.sv"
-            - "waves/usb_tx.do": { file_type: user }
-            - "waves/usb_tx.gtkw": { file_type: user }
+            - "testbench/tb_bit_stuff.sv"
+            - "waves/bit_stuff.do": { file_type: user }
+            - "waves/bit_stuff.gtkw": { file_type: user }
             # - "data/file.txt": { file_type: user }
         file_type: systemVerilogSource
         depend:
             - "u337mg235:ece337:questafiles"
-            - "u337mg235:ece337:tx_fsm:1.0.0"
-            - "u337mg235:ece337:pts_8bit:1.0.0"
-            - "u337mg235:ece337:nrzi_encoder:1.0.0"
-            - "u337mg235:ece337:crc_generate:1.0.0"
-            - "u337mg235:ece337:counter_889:1.0.0"
-            - "u337mg235:ece337:bit_stuff:1.0.0"
 
     synfiles:
         files:
-            - "scripts/syn_usb_tx.tcl"
+            - "scripts/syn_bit_stuff.tcl"
         file_type: tclSource
         depend:
             - "u337mg235:ece337:synfiles"
@@ -54,21 +36,21 @@ targets:
     default: &default
         filesets:
             - rtl
-        toplevel: usb_tx
+        toplevel: bit_stuff
 
     sim: &sim
         <<: *default
         default_tool: verilator
         filesets_append:
             - tb
-        toplevel: tb_usb_tx
+        toplevel: tb_bit_stuff
         tools:
             modelsim:
                 vsim_options:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
-                    - -do "source waves.tcl ; load_wave waves/usb_tx.do"
+                    - -do "source waves.tcl ; load_wave waves/bit_stuff.do"
                     - -onfinish stop
                     - -do "set PrefSource(OpenOnFinish) 0 ; set PrefMain(LinePrefix) \"\" ; set PrefMain(colorizeTranscript) 1"
                     - -coverage
@@ -101,7 +83,7 @@ targets:
         filesets_append:
             - synfiles
         default_tool: design_compiler
-        toplevel: usb_tx
+        toplevel: bit_stuff
         tools:
             design_compiler:
                 script_dir: "src/u337mg235_ece337_synfiles_0"

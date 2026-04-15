@@ -7,6 +7,7 @@ module tx_fsm(
     input logic strobe, data_done,
     input logic [15:0] crc_out,
     input logic [7:0] tx_packet_data,
+    input logic shift_enable, //todo
     output logic get_tx_packet_data, tx_transfer_active, tx_error, end_of_packet, load_enable, enable_crc,
     //output logic count_enable,
     output logic [7:0] data_out
@@ -27,6 +28,8 @@ module tx_fsm(
     //next state logic block
     always_comb begin
         next_state = state;
+        //todo
+        if(shift_enable) begin
         case (state)
             IDLE: begin
                 if (strobe) begin
@@ -91,6 +94,7 @@ module tx_fsm(
             end
             
         endcase
+        end //todo
     end
 
     //output logic block
@@ -234,7 +238,7 @@ module tx_fsm(
                 tx_transfer_active = 1;
                 tx_error = 0;
                 enable_crc = 0;
-                end_of_packet = 1;
+                end_of_packet = 0;
                 load_enable = 1;
             end
             EOP: begin

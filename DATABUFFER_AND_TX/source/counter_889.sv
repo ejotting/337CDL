@@ -1,7 +1,7 @@
 `timescale 1ns / 10ps
 
 module counter_889(
-    input logic clk, n_rst, count_enable, clear_889, tx_transfer_active,
+    input logic clk, n_rst, count_enable, clear_889, bs_shift_enable, tx_transfer_active, 
     output logic [4:0]count, 
     output logic strobe, data_done
 );
@@ -40,13 +40,25 @@ module counter_889(
             strobe <= next_strobe;
         end
     end
-
+/*
     logic [3:0]data_count;
-    flex_counter #(.SIZE(4)) myCounter(
+    flex_counter #(.SIZE(4)) dataDoneCounter(
         .clk(clk), 
         .n_rst(n_rst),
         .clear((strobe && ~tx_transfer_active) || clear_889), 
         .count_enable(strobe && tx_transfer_active), 
+        .rollover_val(4'd8), //todo
+        .count_out(data_count), 
+        .rollover_flag()
+    );
+    assign data_done = strobe && tx_transfer_active && (data_count == 4'd7);
+*/
+    logic [3:0]data_count;
+    flex_counter #(.SIZE(4)) dataDoneCounter(
+        .clk(clk), 
+        .n_rst(n_rst),
+        .clear((strobe && ~tx_transfer_active) || clear_889), 
+        .count_enable(strobe && bs_shift_enable && tx_transfer_active), 
         .rollover_val(4'd8), //todo
         .count_out(data_count), 
         .rollover_flag()

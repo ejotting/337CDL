@@ -88,7 +88,7 @@ module tb_usb_tx ();
         @(negedge clk);
 
         $display("Transmit DATA1");
-        set_inputs(7'd1, 8'b01100010, 3'd2);
+        set_inputs(7'd1, 8'b11111100, 3'd2);
         repeat(260) @(negedge clk);
         set_inputs(7'd0, 8'b10100111, 3'd2);
         repeat(180) @(negedge clk);
@@ -99,7 +99,10 @@ module tb_usb_tx ();
         set_inputs(7'd1, 8'b10001010, 3'd1);
         repeat(260) @(negedge clk);
         set_inputs(7'd0, 8'b10001010, 3'd1);
-        repeat(180) @(negedge clk);
+        repeat(140) @(negedge clk);
+        set_inputs(7'd0, 8'b10001010, 3'd0);
+        repeat(40) @(negedge clk);
+
 
         $display("Transmit ACK");
         set_inputs(7'd8, 8'b10101010, 3'd3);
@@ -112,9 +115,8 @@ module tb_usb_tx ();
         $display("Transmit STALL");
         set_inputs(7'd1, 8'b10101010, 3'd5);
         repeat(200) @(negedge clk);
-
-
-        //todo complete this
+        set_inputs(7'd0, 8'b10001010, 3'd0);
+        repeat(64) @(negedge clk);
 
         $finish;
     end

@@ -36,7 +36,7 @@ module ahb_subordinate_usb #(
     logic next_clear;
     logic [2:0] next_tx_packet;
     logic tx_active_prev;
-    logic [(DATA_WIDTH*8)-1:0] safe_write_data;
+
     logic tx_done;
     
 
@@ -62,7 +62,19 @@ module ahb_subordinate_usb #(
     logic [ADDR_WIDTH-1:0] addr_increment;
     logic [ADDR_WIDTH-1:0] wrap_window, wrap_base;
 
-    logic addr_overflow, addr_overflow_reg;
+    logic addr_overflow;
+    logic [ADDR_WIDTH-1:0] prev_end_addr, current_end_addr; //previous write endpoint, new read endpoint, if overlap=RAW
+    logic raw_hazard;
+    logic hazard_stall;
+    typedef enum logic [2:0] {
+        ST_IDLE,
+        BYTE1,
+        BYTE2,
+        BYTE3,
+        BYTE4
+    } state_t;
+    state_t state, next_state;
+    logic [23:0] buffer,next_buffer;
     assign rx_packet_flag={RX_packet==3'b101,RX_packet==3'b100,RX_packet==3'b011,RX_packet==3'b010,RX_packet==3'b001};
     assign tx_done=(tx_active_prev==1) && (TX_transferactive==0);
     
@@ -144,6 +156,9 @@ module ahb_subordinate_usb #(
             next_beat_cnt='0;
         end
     end
+    
+
+
     always_comb begin
         next_tx_packet=TX_packet;
         next_clear=clear;
@@ -154,13 +169,13 @@ module ahb_subordinate_usb #(
         get_rx_data=0;
         next_error_state=0;
         next_error_state2=0;
-        case(hsize_reg) 
-            2'b00: safe_write_data={{(DATA_WIDTH*8-8){1'b0}},hwdata[7:0]};
-            2'b01: safe_write_data={{(DATA_WIDTH*8-16){1'b0}},hwdata[15:0]};
-            2'b10: safe_write_data=hwdata;
-            default: safe_write_data=hwdata;
-        endcase
-        TX_data=safe_write_data[7:0];
+        prev_end_addr=haddr_reg+((2**hsize_reg)-1);
+        current_end_addr=haddr+((2**hsize)-1);
+        raw_hazard=hsel_reg&&hwrite_reg&&hsel&&!hwrite&&(haddr<=prev_end_addr) &&(haddr_reg<=current_end_addr)&&(htrans_reg==NONSEQ||htrans_reg==SEQ) &&(!hazard_stall);
+        if(raw_hazard) begin
+            hready=0;
+        end
+        
         D_mode=TX_transferactive;
         if(error_state2) begin
             hready=1;
@@ -171,67 +186,162 @@ module ahb_subordinate_usb #(
             hresp=1;
             next_error_state=0;
             next_error_state2=1;
-        end else if (addr_overflow_reg) begin
-            hready=0;
-            hresp=1;
-            next_error_state2=1;
-        
-        end else if (addr_overflow && htrans_reg==SEQ) begin
+        end else if (addr_overflow) begin
             hready=0;
             hresp=1;
             next_error_state=1;
         
+        
         end else if(hsel_reg && (htrans_reg==NONSEQ || htrans_reg==SEQ)) begin
-            if(!hwrite_reg && (haddr_reg==4'h0)&& RX_dataready==0) begin
-                hready=0;
-                hrdata='0;
-            end else if(hwrite_reg) begin
-                case (haddr_reg)
-                    4'h0: store_tx_data=1;
-                    4'hC:next_tx_packet=safe_write_data[2:0];
-                    4'hD: begin
-                        if(safe_write_data[0]) begin
-                            next_clear=1;
+            if(haddr_reg==4'h0) begin
+                case(state) 
+                    ST_IDLE: begin
+                        if(!raw_hazard) begin
+                            if(!hwrite_reg &&RX_dataready==0) begin
+                                hready=0;
+                            end else begin
+                                next_state=BYTE1;
+                            end
                         end
                     end
-                    default: begin
-                        hready=0;
-                        hresp=1;
-                        next_error_state=1;
+                    BYTE1: begin
+                        next_state=ST_IDLE;
+                        if(!hwrite_reg) begin
+                            next_buffer[7:0]=RX_data;
+                            if(hsize_reg>=2'b01) begin
+                                get_rx_data=1;
+                                hready=0;
+                                next_state=BYTE2;
+                            end
+                            else begin
+                                hrdata={24'd0,RX_data};
+                            end
+                        end
+                        else begin
+                            TX_data=hwdata[7:0];
+                            store_tx_data=1;
+                            if(hsize_reg>=2'b01) begin
+                                hready=0;
+                                next_state=BYTE2;
+                            end
+                        end
                     end
+                    BYTE2: begin
+                        next_state=ST_IDLE;
+                        if(!hwrite_reg) begin
+                            next_buffer[15:8]=RX_data;
+                            if(hsize_reg>=2'b10) begin
+                                get_rx_data=1;
+                                hready=0;
+                                next_state=BYTE3;
+                            end
+                            else begin
+                                hrdata={16'd0,RX_data,buffer[7:0]};
+                            end
+                        end
+                        else begin
+                            TX_data=hwdata[15:8];
+                            store_tx_data=1;
+                            if(hsize_reg>=2'b10) begin
+                                hready=0;
+                                next_state=BYTE3;
+                            end
+                        end
+                    end
+                    BYTE3: begin 
+                        next_state=ST_IDLE;
+                        if(!hwrite_reg) begin
+                            next_buffer[23:16]=RX_data;
+                            if(hsize_reg>=2'b11) begin
+                                get_rx_data=1;
+                                hready=0;
+                                next_state=BYTE4;
+                            end
+                            else begin
+                                hrdata={8'd0,RX_data, buffer[15:0]};
+                            end
+                        end
+                        else begin
+                            TX_data=hwdata[23:16];
+                            store_tx_data=1;
+                            if(hsize_reg>=2'b11) begin
+                                hready=0;
+                                next_state=BYTE4;
+                            end
+                        end
+
+                    end
+                    BYTE4: begin
+                        next_state=ST_IDLE;
+                        if(!hwrite_reg) begin
+                            hrdata={RX_data,buffer[23:0]};
+                        end else begin
+                            TX_data=hwdata[31:24];
+                            store_tx_data=1;
+                        end
+                    end
+                    
                 endcase
-            end else begin
-                case(haddr_reg) 
-                    4'h0: begin
-                        get_rx_data=1;
-                        hrdata[7:0]=RX_data;
-                    end
-                    4'h4: begin
-                        hrdata[0]=RX_dataready;
-                        hrdata[5:1]=rx_packet_flag;
-                        hrdata[8]=RX_transferactive;
-                        hrdata[9]=TX_transferactive;
+            end else
+
+            if(hready) begin    
+                if(!hwrite_reg && (haddr_reg==4'h0)&& RX_dataready==0) begin
+                    hready=0;
+                    hrdata='0;
+                end else if(hwrite_reg) begin
+                    case (haddr_reg)
+                        4'h0: store_tx_data=1;
+                        4'hC: begin
+                            case(hwdata[7:0]) //pid mapping
+                                8'hC3: next_tx_packet=3'b000;
+                                8'h4B: next_tx_packet=3'b001;
+                                8'hD2: next_tx_packet=3'b010;
+                                8'h5A: next_tx_packet=3'b011;
+                                8'h1E: next_tx_packet=3'b100;
+                                default: next_tx_packet=3'b111;
+                            endcase
+                        end
+                        4'hD: begin
+                            if(hwdata[8]) begin
+                                next_clear=1;
+                            end
+                        end
+                        default: begin
+                            hready=0;
+                            hresp=1;
+                            next_error_state=1;
+                        end
+                    endcase
+                end else begin
+                    case(haddr_reg) 
                         
-                    end
-                    4'h6: begin
-                        hrdata[0]=RX_error;
-                        hrdata[8]=TX_error;
-                    end
-                    4'h8: begin
-                        hrdata[6:0]=bufferoccupancy;
-                    end
-                    4'hC: begin
-                        hrdata[2:0]=TX_packet;
-                    end
-                    4'hD: begin
-                        hrdata[0]=clear;
-                    end
-                    default: begin
-                        hready=0;
-                        hresp=1;
-                        next_error_state=1;
-                    end
-                endcase
+                        4'h4: begin
+                            hrdata[0]=RX_dataready;
+                            hrdata[5:1]=rx_packet_flag;
+                            hrdata[8]=RX_transferactive;
+                            hrdata[9]=TX_transferactive;
+                            
+                        end
+                        4'h6: begin
+                            hrdata[0]=RX_error;
+                            hrdata[8]=TX_error;
+                        end
+                        4'h8: begin
+                            hrdata[6:0]=bufferoccupancy;
+                        end
+                        4'hC: begin
+                            hrdata[2:0]=TX_packet;
+                        end
+                        4'hD: begin
+                            hrdata[0]=clear;
+                        end
+                        default: begin
+                            hready=0;
+                            hresp=1;
+                            next_error_state=1;
+                        end
+                    endcase
+                end
             end
         end
         if(tx_done) begin
@@ -252,27 +362,29 @@ module ahb_subordinate_usb #(
             hwrite_reg<='0;
             error_state<='0;
             error_state2<='0;
-            addr_overflow_reg<='0;
             TX_packet<='0;
             clear<='0;
             tx_active_prev<='0;
             beat_cnt<='0;
             burst_base_addr<='0;
+            hazard_stall<='0;
         end else begin
-            hsel_reg<=hsel;
-            haddr_reg<=next_haddr_reg;
-            hsize_reg<=hsize;
-            htrans_reg<=htrans;
-            hburst_reg<=hburst;
-            hwrite_reg<=hwrite;
+            if(hready) begin
+                hsel_reg<=hsel;
+                haddr_reg<=next_haddr_reg;
+                hsize_reg<=hsize;
+                htrans_reg<=htrans;
+                hburst_reg<=hburst;
+                hwrite_reg<=hwrite;
+                beat_cnt<=next_beat_cnt;
+                burst_base_addr<=next_burst_base_addr;
+            end
             error_state<=next_error_state;
             error_state2<=next_error_state2;
-            addr_overflow_reg<=addr_overflow;
             TX_packet<=next_tx_packet;
             clear<=next_clear;
             tx_active_prev<=TX_transferactive;
-            beat_cnt<=next_beat_cnt;
-            burst_base_addr<=next_burst_base_addr;
+            hazard_stall<=raw_hazard;
         end
     end
 endmodule

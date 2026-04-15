@@ -7,7 +7,7 @@ module crc_generate(
     logic [15:0] shifted, crc;
     logic [15:0] next_crc;
 
-    always_comb begin
+    always_comb begin //TODO use thomas's code and try it.
         //default
         next_crc = crc;
         shifted = {1'b0, crc[15:1]}; //shift right bc LSB data in TODO
