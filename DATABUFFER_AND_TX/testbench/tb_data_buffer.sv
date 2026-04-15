@@ -83,7 +83,6 @@ module tb_data_buffer ();
         reset_dut;
         @(negedge clk);
 
-        //todo work on this
         $display("Pushing TX data until full");
         store_tx_data = 1;
         repeat(8) begin

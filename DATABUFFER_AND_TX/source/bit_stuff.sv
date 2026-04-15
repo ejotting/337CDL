@@ -20,7 +20,7 @@ module bit_stuff(
             shift_enable <= next_shift_enable;
         end
     end
-
+/*
     always_comb begin
         if(strobe) begin
             //default
@@ -31,13 +31,45 @@ module bit_stuff(
             if(serial_in == 0) begin
                 next_one_count = 3'd0;
             end
-            else if(serial_in == 1 && one_count == 3'd6)begin
+            else if(serial_in == 1 && one_count + 3'd1 == 3'd6)begin
                 next_one_count = 3'd0;
                 next_serial_out = 0;
                 next_shift_enable = 0;
             end
-            else if(serial_in == 1 && one_count < 3'd6) begin
+            else if(serial_in == 1 && one_count + 3'd1 < 3'd6) begin //todo changed to +1 so it ahead of time shfit_enable is toggled
                 next_one_count = one_count + 3'd1;
+            end
+        end
+    end*/
+    always_comb begin
+        if(strobe) begin
+            //default
+            next_one_count = one_count;
+            next_serial_out = serial_in;
+            next_shift_enable = 1; //assume things go thru, so just keep shifting pts
+
+            if(one_count == 3'd6)begin //todo...this
+                next_one_count = 3'd0;
+                next_serial_out = 0;
+                next_shift_enable = 1;
+            end
+            else if(serial_in == 0) begin
+                next_one_count = 3'd0;
+                next_serial_out = serial_in;
+                next_shift_enable = 1;
+            end
+            else if(serial_in == 1 && one_count + 3'd1 == 3'd6)begin //this will happen before...todo
+                //next_one_count = 3'd0;
+                //next_serial_out = 0;
+                next_one_count = one_count + 3'd1;
+                next_serial_out = serial_in;
+                next_shift_enable = 0;
+            end
+            
+            else if(serial_in == 1 && one_count + 3'd1 < 3'd6) begin //todo changed to +1 so it ahead of time shfit_enable is toggled
+                next_one_count = one_count + 3'd1;
+                next_serial_out = serial_in;
+                next_shift_enable = 1;
             end
         end
     end

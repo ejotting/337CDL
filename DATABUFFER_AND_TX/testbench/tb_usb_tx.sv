@@ -88,7 +88,7 @@ module tb_usb_tx ();
         @(negedge clk);
 
         $display("Transmit DATA1");
-        set_inputs(7'd1, 8'b01100010, 3'd2);
+        set_inputs(7'd1, 8'b11111100, 3'd2);
         repeat(260) @(negedge clk);
         set_inputs(7'd0, 8'b10100111, 3'd2);
         repeat(180) @(negedge clk);

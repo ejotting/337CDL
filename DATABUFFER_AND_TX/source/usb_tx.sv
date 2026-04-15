@@ -24,6 +24,7 @@ module usb_tx(
         .data_done(data_done), 
         .crc_out(crc_out), 
         .tx_packet_data(tx_packet_data), //
+        .shift_enable(bs_shift_enable), //todo
         .get_tx_packet_data(get_tx_packet_data), //
         .tx_transfer_active(tx_transfer_active), //
         .tx_error(tx_error), //
