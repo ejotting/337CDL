@@ -31,14 +31,14 @@ module tb_flex_ctr ();
         @(posedge clk);
     end
     endtask
-
-    flex_ctr #() DUT (.*);
+    logic clear;
+    flex_ctr DUT (.clk(clk),.n_rst(n_rst),.count_enable(1'b1),.clear(clear));
 
     initial begin
         n_rst = 1;
-
+        clear = 0;
         reset_dut;
-
+        repeat(10) @(negedge clk);
         $finish;
     end
 endmodule

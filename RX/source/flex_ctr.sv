@@ -14,10 +14,11 @@ logic [SIZE-1:0]next_count;
 logic flag;
 
 always_comb begin
+
     if(count_out == rollover_val - 1) begin
-        flag = 1;
+        flag = 1'b1;
     end else begin
-        flag = 0;
+        flag = 1'b0;
     end
 
     if(clear) begin
@@ -38,7 +39,7 @@ end
 always_ff @(posedge clk or negedge n_rst) begin
     if(!n_rst) begin
         count_out <= 0;
-        rollover_flag <= 0;
+        rollover_flag <= 1'b0;
     end else begin
         count_out <= next_count;
         rollover_flag <= flag;
