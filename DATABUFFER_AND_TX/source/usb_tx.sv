@@ -8,6 +8,7 @@ module usb_tx(
     output logic dp_out, dm_out, get_tx_packet_data, tx_error, tx_transfer_active
 );
     logic bs_shift_enable; //bit stuffing
+    logic next_end_of_packet;
 
     //fsm inputs
     logic strobe, data_done;
@@ -28,7 +29,7 @@ module usb_tx(
         .get_tx_packet_data(get_tx_packet_data), //
         .tx_transfer_active(tx_transfer_active), //
         .tx_error(tx_error), //
-        .end_of_packet(end_of_packet),
+        .end_of_packet(next_end_of_packet),
         .load_enable(load_enable),
         .enable_crc(enable_crc),
         .data_out(data_out)
@@ -65,6 +66,13 @@ module usb_tx(
         .serial_out(bs_serial_out),
         .shift_enable(bs_shift_enable)
     );
+   
+    always_ff @(posedge clk or negedge n_rst) begin
+        if(!n_rst) 
+            end_of_packet <= 0;
+        else if(strobe)
+            end_of_packet <= next_end_of_packet;
+    end
 
     nrzi_encoder myNRZI(
         .clk(clk),
