@@ -1,5 +1,5 @@
 `timescale 1ns / 10ps
-
+//todo version one
 module tx_fsm(
     input logic clk, n_rst,
     input logic [2:0] tx_packet,

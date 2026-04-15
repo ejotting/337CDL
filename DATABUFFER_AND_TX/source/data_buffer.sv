@@ -38,8 +38,8 @@ module data_buffer(
         buffer_occupancy = occupancy;
 
         if (occupancy > 0) begin //if queue is not empty
-            tx_packet_data = queue[read_ptr -: 8];
-            rx_data = queue[read_ptr -: 8];
+            tx_packet_data = queue[read_ptr-:8];
+            rx_data = queue[read_ptr-:8];
         end
 
         if (clear || flush) begin //if ahb sub wants to clear or if rx wants to flush
@@ -51,12 +51,12 @@ module data_buffer(
         else begin
             //legal write
             if (store_tx_data && (occupancy < 7'd64)) begin
-                next_queue[write_ptr -: 8] = tx_data;
+                next_queue[write_ptr-:8] = tx_data;
                 next_occupancy = occupancy + 1'b1;
                 next_write_ptr = write_ptr + 9'd8; //shift write index
             end
             else if (store_rx_packet_data && (occupancy < 7'd64)) begin
-                next_queue[write_ptr -: 8] = rx_packet_data;
+                next_queue[write_ptr-:8] = rx_packet_data;
                 next_occupancy = occupancy + 1'b1;
                 next_write_ptr = write_ptr + 9'd8;
             end
