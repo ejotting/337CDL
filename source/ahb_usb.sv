@@ -23,14 +23,44 @@ module ahb_usb (
 );
 
     logic [6:0]buffer_occupancy;
-    logic rx_data_ready, rx_transfer_active, rx_error, store_rx_packet_data, flush;
-    logic [7:0]rx_packet_data;
-    logic [2:0]rx_packet;
+    logic rx_data_ready, rx_transfer_active, rx_error, store_rx_packet_data, flush, clear, store_tx_data;
+    logic get_tx_packet_data, get_rx_data, tx_error, tx_transfer_active;
+    logic [7:0]rx_packet_data, rx_data, tx_data, tx_packet_data;
+    logic [2:0]rx_packet, tx_packet;
 
     usb_rx RX (.clk(clk),.n_rst(n_rst),.dm_in(dm_in),.dp_in(dp_in),
     .buffer_occupancy(buffer_occupancy),.rx_packet(rx_packet),.rx_data_ready(rx_data_ready),
     .rx_transfer_active(rx_transfer_active),.rx_error(rx_error),
     .store_rx_packet_data(store_rx_packet_data),.rx_packet_data(rx_packet_data),.flush(flush));
+
+    data_buffer DB (
+        .clk(clk),
+        .n_rst(n_rst),
+        .store_tx_data(store_tx_data),
+        .get_tx_packet_data(get_tx_packet_data),
+        .clear(clear),
+        .flush(flush),
+        .store_rx_packet_data(store_rx_packet_data),
+        .get_rx_data(get_rx_data),
+        .tx_data(tx_data),
+        .rx_packet_data(rx_packet_data),
+        .tx_packet_data(tx_packet_data),
+        .rx_data(rx_data),
+        .buffer_occupancy(buffer_occupancy)
+    );
+
+    usb_tx TX(
+        .clk(clk),
+        .n_rst(n_rst),
+        .buffer_occupancy(buffer_occupancy),
+        .tx_packet_data(tx_packet_data),
+        .tx_packet(tx_packet),
+        .dp_out(dp_out),
+        .dm_out(dm_out),
+        .get_tx_packet_data(get_tx_packet_data),
+        .tx_error(tx_error),
+        .tx_transfer_active(tx_transfer_active)
+    );
 
 endmodule
 

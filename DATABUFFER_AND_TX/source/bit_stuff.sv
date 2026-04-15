@@ -43,6 +43,9 @@ module bit_stuff(
         end
     end*/
     always_comb begin
+        next_one_count = one_count;
+        next_serial_out = serial_out;
+        next_shift_enable = shift_enable;
 
         if(strobe) begin
             //default
