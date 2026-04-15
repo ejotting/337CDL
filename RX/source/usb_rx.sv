@@ -14,10 +14,11 @@ module usb_rx #(
     output logic rx_transfer_active, //Done
     output logic rx_error, //Done
     output logic store_rx_packet_data, //Done
-    output logic rx_packet_data //Done
+    output logic [7:0]rx_packet_data, //Done
+    output logic flush
 );
 
-    logic dm, dp, new_edge, eof, data_out, sample_the_data, valid_bit, flush, start5, start16;
+    logic dm, dp, new_edge, eof, data_out, sample_the_data, valid_bit, start5, start16,error;
     logic [15:0]shift_reg_val, crc16;
     logic [4:0]crc5;
 
@@ -40,15 +41,17 @@ module usb_rx #(
     .store_rx_packet_data(store_rx_packet_data),.rx_packet(rx_packet),.rx_error(rx_error),
     .rx_transfer_active(rx_transfer_active),.valid_bit(valid_bit),.start5(start5),.start16(start16));
 
-    crc5 CRC5 (.clk(clk),.n_rst(n_rst),.start5(start5),.crc5(crc5),
-    .data_in(data_out),.sample_the_data(sample_the_data));
+    crc5 CRC5 (.clk(clk),.n_rst(n_rst),.start5(start5),.crc5_out(crc5),
+    .crc5_in(shift_reg_val[10]),.sample_the_data(sample_the_data),.rx_transfer_active(rx_transfer_active));
 
-    crc16 CRC16 (.clk(clk),.n_rst(n_rst),.start16(start16),.crc16(crc16),
-    .data_in(data_out),.sample_the_data(sample_the_data));
+    crc16 CRC16 (.clk(clk),.n_rst(n_rst),.start16(start16),.crc16_out(crc16),
+    .crc16_in(rx_packet_data[7]),.sample_the_data(sample_the_data),.rx_transfer_active(rx_transfer_active));
 
     bit_stuff_checker BSC (.clk(clk),.n_rst(n_rst),.data_in(data_out),
     .sample_the_data(sample_the_data),.valid_bit(valid_bit),.error(error),
     .eof(eof),.rx_transfer_active(rx_transfer_active));
+
+
 
 endmodule
 

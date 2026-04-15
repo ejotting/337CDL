@@ -16,6 +16,9 @@ filesets:
             - "team066:ece337:rx_fsm:1.0.0"
             - "team066:ece337:shift_reg:1.0.0"
             - "u337mg127:ece337:sync"
+            - "team066:ece337:crc5:1.0.0"
+            - "team066:ece337:crc16:1.0.0"
+            - "team066:ece337:bit_stuff_checker:1.0.0"
 
     synth:
         depend:
