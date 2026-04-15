@@ -18,7 +18,7 @@ module crc_generate(
                 next_crc = shifted; //then shift in a zero
             end
             else begin //perform XOR on polynomial after shift w zero
-                next_crc = shifted ^ 16'ha001; //opposite order bc we are shifting data LSB first TODO
+                next_crc = shifted ^ 16'b101000000000001; //opposite order bc we are shifting data LSB first TODO
             end
         end
     end

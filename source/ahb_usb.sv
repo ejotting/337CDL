@@ -32,5 +32,34 @@ module ahb_usb (
     .rx_transfer_active(rx_transfer_active),.rx_error(rx_error),
     .store_rx_packet_data(store_rx_packet_data),.rx_packet_data(rx_packet_data),.flush(flush));
 
+    data_buffer DB (
+        .clk(clk),
+        .n_rst(n_rst),
+        .store_tx_data(store_tx_data),
+        .get_tx_packet_data(get_tx_packet_data),
+        .clear(clear),
+        .flush(flush),
+        .store_rx_packet_data(store_rx_packet_data),
+        .get_rx_data(get_rx_data),
+        .tx_data(tx_data),
+        .rx_packet_data(rx_packet_data),
+        .tx_packet_data(tx_packet_data),
+        .rx_data(rx_data),
+        .buffer_occupancy(buffer_occupancy)
+    );
+
+    usb_tx TX(
+        .clk(clk),
+        .n_rst(n_rst),
+        .buffer_occupancy(buffer_occupancy),
+        .tx_packet_data(tx_packet_data),
+        .tx_packet(tx_packet),
+        .dp_out(dp_out),
+        .dm_out(dm_out),
+        .get_tx_packet_data(get_tx_packet_data),
+        .tx_error(tx_error),
+        .tx_transfer_active(tx_transfer_active)
+    );
+
 endmodule
 
