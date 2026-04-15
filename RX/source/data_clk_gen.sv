@@ -17,6 +17,9 @@ always_ff @(posedge clk or negedge n_rst) begin
     if(!n_rst) begin
         data_out <= 1'b1;
         sample_the_data <= 1'b0;
+        start_count1 <= 1'b1;
+        start_count2 <= 1'b0;
+        stay_one <= 1'b0;
     end else begin
         data_out <= ndata_out;
         sample_the_data <= nsample_the_data;
@@ -28,7 +31,7 @@ always_ff @(posedge clk or negedge n_rst) begin
         else if(new_edge) stay_one <= 1'b0;
     end
 end
-/* verilator lint_off PINMISSING */
+
 flex_ctr #(.SIZE(3)) FIRSTSAMPLE (.clk(clk),.n_rst(n_rst),.clear(new_edge),.count_enable(start_count1),
 .rollover_val(3'd4),.count_out(count_out1),.rollover_flag(rollover1));
 

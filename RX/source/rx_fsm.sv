@@ -36,16 +36,20 @@ flex_ctr #(.SIZE(5)) TIMER (.clk(clk),.n_rst(n_rst),.count_enable(enable),
 .clear(clear),.count_out(count_out),.rollover_val(5'd30));
 
 typedef enum logic [3:0] {IDLE, SYNC, TOKEN, ACK, DATA1, DATA2, CRC_CHECK5, 
-CRC_CHECK16, DATA_EOP, EOP1, EOP2, DATA_READY, ERROR} state_t;
+CRC_CHECK16, DATA_EOP, EOP1, EOP2, DATA_READY, ERROR, SEND_RX_PACKET} state_t;
 
 state_t state, next_state;
+
+logic [2:0]packet_type, next_packet_type;
 
 always_ff @(posedge clk or negedge n_rst) begin
 
     if(!n_rst) begin
         state <= IDLE;
+        packet_type <= 3'd0;
     end else begin
         state <= next_state;
+        packet_type <= next_packet_type;
     end
 
 end
@@ -62,21 +66,24 @@ always_comb begin
     clear = 0;
     start16 = 0;
     start5 = 0;
+    next_packet_type = packet_type;
 
     case(state)
     IDLE: begin
         clear = 1;
         rx_transfer_active = 0;
-        if(shift_reg_val[15:8] == 8'd1) begin next_state = SYNC; end
+        if(shift_reg_val[15:8] == 8'h80) begin next_state = SYNC; end
         else next_state = IDLE;
     end
     SYNC: begin
         next_state = SYNC;
         if(count_out == 5'd8) begin
             clear = 1;
-            if(shift_reg_val[15:8] == 8'd1 || shift_reg_val[15:8] == 8'd2) next_state = TOKEN;
-            else if(shift_reg_val[15:8] == 8'd3) next_state = ACK;
-            else if(shift_reg_val[15:8] == 8'd4 || shift_reg_val[15:8] == 8'd5) next_state = DATA1;
+            if(shift_reg_val[15:8] == 8'b11100001) begin next_state = TOKEN; next_packet_type = 3'd1; end
+            else if(shift_reg_val[15:8] == 8'b01101001) begin next_state = TOKEN; next_packet_type = 3'd2; end
+            else if(shift_reg_val[15:8] == 8'b11010010) begin next_state = ACK; next_packet_type = 3'd3; end
+            else if(shift_reg_val[15:8] == 8'b11000011) begin next_state = DATA1; next_packet_type = 3'd4; end
+            else if(shift_reg_val[15:8] == 8'b01001011) begin next_state = DATA1; next_packet_type = 3'd5; end
             else next_state = ERROR;
         end
     end
@@ -85,7 +92,7 @@ always_comb begin
         next_state = TOKEN;
         if(count_out == 5'd11) begin
             clear = 1;
-            if(shift_reg_val[15:5] == 11'b11001100000) next_state = CRC_CHECK5;
+            if(shift_reg_val[15:5] == 11'b00001100110) next_state = CRC_CHECK5;
             else next_state = IDLE;
         end
     end
@@ -106,7 +113,7 @@ always_comb begin
     CRC_CHECK5: begin
         next_state = CRC_CHECK5;
         if(count_out == 5'd5) begin
-            if(shift_reg_val[15:11] == crc5) next_state = IDLE;
+            if(shift_reg_val[15:11] == crc5) next_state = EOP1;
             else next_state = ERROR;
         end
     end
@@ -115,13 +122,20 @@ always_comb begin
         else next_state = ERROR;
     end
     EOP1: begin
-
+        next_state = EOP1;
         if(sample_the_data && eof) next_state = EOP2;
         else if(sample_the_data) next_state = ERROR;
     end
     EOP2: begin
-        if(sample_the_data && eof) next_state = IDLE;
+        next_state = EOP2;
+        if(sample_the_data && eof) next_state = SEND_RX_PACKET;
         else if(sample_the_data) next_state = ERROR;
+    end
+    SEND_RX_PACKET: begin
+        
+        rx_packet = packet_type;
+        next_state = IDLE;
+
     end
     DATA_EOP: begin
         next_state = DATA_EOP;
@@ -131,6 +145,7 @@ always_comb begin
     DATA_READY: begin
         next_state = IDLE;
         rx_data_ready = 1;
+        rx_packet = packet_type;
     end
     ERROR: begin
         next_state = IDLE;

@@ -20,6 +20,23 @@ module tb_usb_rx ();
         #(CLK_PERIOD / 2.0);
     end
 
+    logic [6:0]buffer_occupancy;
+    logic dp_in, dm_in;
+
+    task automatic send_byte(logic [7:0]in, ref logic dp_in, ref logic dm_in);
+    begin
+        
+        for(int i = 0; i < 8; i++) begin
+            if(in[i] == 0) begin
+                dp_in = ~dp_in;
+                dm_in = ~dm_in;
+            end
+            repeat(8) @(negedge clk);
+            if(i == 2 || i == 5) @(negedge clk);
+        end
+    end
+    endtask
+
     task reset_dut;
     begin
         n_rst = 0;
@@ -32,12 +49,26 @@ module tb_usb_rx ();
     end
     endtask
 
-    usb_rx #() DUT (.*);
+    usb_rx DUT (.clk(clk),.n_rst(n_rst),.buffer_occupancy(buffer_occupancy),
+    .dp_in(dp_in),.dm_in(dm_in));
 
     initial begin
         n_rst = 1;
-
+        buffer_occupancy = 7'd0;
+        dp_in = 1;
+        dm_in = 0;
         reset_dut;
+        
+        @(negedge clk);
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b01101001,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
 
         $finish;
     end
