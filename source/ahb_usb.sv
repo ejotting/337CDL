@@ -23,9 +23,10 @@ module ahb_usb (
 );
 
     logic [6:0]buffer_occupancy;
-    logic rx_data_ready, rx_transfer_active, rx_error, store_rx_packet_data, flush;
-    logic [7:0]rx_packet_data;
-    logic [2:0]rx_packet;
+    logic rx_data_ready, rx_transfer_active, rx_error, store_rx_packet_data, flush, clear, store_tx_data;
+    logic get_tx_packet_data, get_rx_data, tx_error, tx_transfer_active;
+    logic [7:0]rx_packet_data, rx_data, tx_data, tx_packet_data;
+    logic [2:0]rx_packet, tx_packet;
 
     usb_rx RX (.clk(clk),.n_rst(n_rst),.dm_in(dm_in),.dp_in(dp_in),
     .buffer_occupancy(buffer_occupancy),.rx_packet(rx_packet),.rx_data_ready(rx_data_ready),
