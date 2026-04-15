@@ -35,7 +35,7 @@ module usb_rx #(
     .shift_reg_val(shift_reg_val),.rx_data(rx_packet_data));
 
     rx_fsm CTRLOGIC (.clk(clk),.n_rst(n_rst),.shift_reg_val(shift_reg_val),
-    .buffer_occupancy(buffer_occupancy),.sample_the_data(sample_the_data),
+    .buffer_occupancy(buffer_occupancy),.sample_the_data(sample_the_data),.error(error),
     .crc5(crc5),.crc16(crc16),.eof(eof),.flush(flush),.rx_data_ready(rx_data_ready),
     .store_rx_packet_data(store_rx_packet_data),.rx_packet(rx_packet),.rx_error(rx_error),
     .rx_transfer_active(rx_transfer_active),.valid_bit(valid_bit),.start5(start5),.start16(start16));
@@ -47,7 +47,8 @@ module usb_rx #(
     .data_in(data_out),.sample_the_data(sample_the_data));
 
     bit_stuff_checker BSC (.clk(clk),.n_rst(n_rst),.data_in(data_out),
-    .sample_the_data(sample_the_data),.valid_bit(valid_bit));
+    .sample_the_data(sample_the_data),.valid_bit(valid_bit),.error(error),
+    .eof(eof),.rx_transfer_active(rx_transfer_active));
 
 endmodule
 

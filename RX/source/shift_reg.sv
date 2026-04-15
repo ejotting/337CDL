@@ -13,7 +13,7 @@ module shift_reg (
 
 logic [23:0]po;
 /* verilator lint_off PINMISSING */
-flex_sr #(.SIZE(24),.MSB_FIRST(0)) SHIFTREG (.clk(clk),.n_rst(n_rst),
+flex_sr #(.SIZE(24),.MSB_FIRST(0)) SHIFTREG (.clk(clk),.n_rst(n_rst), .load_enable(1'b0),
 .shift_enable(valid_bit && sample_the_data),.serial_in(data_out),.parallel_out(po)); 
 
 assign shift_reg_val = po[23:8];

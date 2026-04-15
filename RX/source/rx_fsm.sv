@@ -12,6 +12,7 @@ module rx_fsm #(
     input logic [15:0]crc16,
     input logic eof,
     input logic valid_bit,
+    input logic error,
 
     output logic flush,
     output logic rx_data_ready,
@@ -141,6 +142,8 @@ always_comb begin
     end
 
 endcase
+
+if(error) next_state = ERROR;
 
 end
 
