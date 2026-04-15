@@ -4,7 +4,7 @@
 module tb_flex_ctr ();
 
     localparam CLK_PERIOD = 10ns;
-
+    localparam SIZE = 5;
     initial begin
         $dumpfile("waveform.vcd");
         $dumpvars;
@@ -31,14 +31,26 @@ module tb_flex_ctr ();
         @(posedge clk);
     end
     endtask
-    logic clear;
-    flex_ctr DUT (.clk(clk),.n_rst(n_rst),.count_enable(1'b1),.clear(clear));
+    logic clear, count_enable;
+    logic [SIZE-1:0]rollover_val;
+
+    flex_ctr  #() DUT
+        (
+        .clk(clk),
+        .n_rst(n_rst),
+        .clear(clear),
+        .count_enable(count_enable),
+        .rollover_val(24),
+        .count_out(),
+        .rollover_flag()
+        );
 
     initial begin
         n_rst = 1;
         clear = 0;
         reset_dut;
-        repeat(10) @(negedge clk);
+        count_enable = 1;
+        repeat(50) @(negedge clk);
         $finish;
     end
 endmodule

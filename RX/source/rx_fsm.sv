@@ -32,7 +32,7 @@ logic enable;
 assign enable = sample_the_data && !eof && valid_bit;
 /* verilator lint_off PINMISSING */
 flex_ctr #(.SIZE(5)) TIMER (.clk(clk),.n_rst(n_rst),.count_enable(1'b1),
-.clear(clear),.count_out(count_out));
+.clear(clear),.count_out(count_out),.rollover_val(5'd30));
 
 typedef enum logic [3:0] {IDLE, SYNC, TOKEN, ACK, DATA1, DATA2, CRC_CHECK5, 
 CRC_CHECK16, DATA_EOP, EOP1, EOP2, DATA_READY, ERROR} state_t;
