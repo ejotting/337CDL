@@ -11,6 +11,17 @@ module tb_usb_rx ();
     end
 
     logic clk, n_rst;
+    string testname;
+    string testcase1 = "IN Packet";
+    string testcase2 = "OUT Packet";
+    string testcase3 = "ACK Packet";
+    string testcase4 = "DATA0 Packet";
+    string testcase5 = "DATA1 Packet";
+    string testcase6 = "Unknown PID";
+    string testcase7 = "Unknown Address";
+    string testcase8 = "Incorrect CRC";
+    string testcase9 = "No Bit Stuff RX";
+    string testcase10 = "Bit Stuff RX";
 
     // clockgen
     always begin
@@ -58,7 +69,7 @@ module tb_usb_rx ();
         dp_in = 1;
         dm_in = 0;
         reset_dut;
-        
+        testname = testcase1;
         //IN
         @(negedge clk);
         send_byte(8'b10000000,dp_in,dm_in);
@@ -70,7 +81,7 @@ module tb_usb_rx ();
         repeat(16) @(negedge clk);
         dp_in = 1;
         repeat(9) @(negedge clk);
-
+        testname = testcase2;
         //OUT
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b11100001,dp_in,dm_in);
@@ -81,7 +92,7 @@ module tb_usb_rx ();
         repeat(16) @(negedge clk);
         dp_in = 1;
         repeat(9) @(negedge clk);
-
+        testname = testcase3;
         //ACK
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b11010010,dp_in,dm_in);
@@ -90,7 +101,7 @@ module tb_usb_rx ();
         repeat(16) @(negedge clk);
         dp_in = 1;
         repeat(9) @(negedge clk);
-
+        testname = testcase4;
         //DATA0
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b11000011,dp_in,dm_in);
@@ -107,7 +118,7 @@ module tb_usb_rx ();
         dp_in = 1;
         repeat(9) @(negedge clk);
 
-
+        testname = testcase5;
         //DATA1
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b01001011,dp_in,dm_in);
@@ -123,7 +134,7 @@ module tb_usb_rx ();
         repeat(16) @(negedge clk);
         dp_in = 1;
         repeat(9) @(negedge clk);
-
+        testname = testcase9;
         //Illegal bit stuff
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b01001011,dp_in,dm_in);
@@ -139,7 +150,7 @@ module tb_usb_rx ();
         repeat(16) @(negedge clk);
         dp_in = 1;
         repeat(9) @(negedge clk);
-
+        testname = testcase10;
         //Legal bit stuff
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b01001011,dp_in,dm_in);
@@ -151,6 +162,39 @@ module tb_usb_rx ();
 
         send_byte(8'b10100100,dp_in,dm_in);
         send_byte(8'b01000110,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+        testname = testcase7;
+        //Wrong address/endpoint
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11100001,dp_in,dm_in);
+        send_byte(8'b01101110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+        testname = testcase6;
+        //Wrong PID
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11100101,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+        testname = testcase8;
+        //Incorrect CRC
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11100001,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b01010000,dp_in,dm_in);
         dp_in = 0;
         dm_in = 0;
         repeat(16) @(negedge clk);

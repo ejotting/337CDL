@@ -52,6 +52,8 @@ add wave -noupdate /tb_usb_rx/DUT/CTRLOGIC/state
 add wave -noupdate /tb_usb_rx/DUT/CTRLOGIC/next_state
 add wave -noupdate /tb_usb_rx/DUT/CTRLOGIC/packet_type
 add wave -noupdate /tb_usb_rx/DUT/CTRLOGIC/next_packet_type
+add wave -noupdate -divider {Testcase Name}
+add wave -noupdate /tb_usb_rx/testname
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {465000 ps} 0}
 quietly wave cursor active 1
