@@ -42,7 +42,7 @@ module usb_rx #(
     .rx_transfer_active(rx_transfer_active),.valid_bit(valid_bit),.start5(start5),.start16(start16));
 
     crc5 CRC5 (.clk(clk),.n_rst(n_rst),.start5(start5),.crc5_out(crc5),
-    .crc5_in(shift_reg_val[10]),.sample_the_data(sample_the_data),.rx_transfer_active(rx_transfer_active));
+    .crc5_in(data_out),.sample_the_data(sample_the_data),.rx_transfer_active(rx_transfer_active));
 
     crc16 CRC16 (.clk(clk),.n_rst(n_rst),.start16(start16),.crc16_out(crc16),
     .crc16_in(rx_packet_data[7]),.sample_the_data(sample_the_data),.rx_transfer_active(rx_transfer_active));
