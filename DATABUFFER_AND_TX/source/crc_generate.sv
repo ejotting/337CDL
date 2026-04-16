@@ -10,15 +10,15 @@ module crc_generate(
     always_comb begin //TODO use thomas's code and try it.
         //default
         next_crc = crc;
-        shifted = {1'b0, crc[15:1]}; //shift right bc LSB data in TODO
+        shifted = {crc[14:0], 1'b0}; 
         
         //if new data payload is being sent & data clk is at its edge
         if (enable_crc && strobe) begin 
-            if (data_in == crc[0]) begin //if current bit matches LSB TODO (double check this)
+            if (data_in == crc[15]) begin 
                 next_crc = shifted; //then shift in a zero
             end
             else begin //perform XOR on polynomial after shift w zero
-                next_crc = shifted ^ 16'b101000000000001; //opposite order bc we are shifting data LSB first TODO
+                next_crc = shifted ^ 16'b1000000000000101; 
             end
         end
     end
