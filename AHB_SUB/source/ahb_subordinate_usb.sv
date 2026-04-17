@@ -61,7 +61,7 @@ module ahb_subordinate_usb #(
    localparam WRAP16=3'b110;
    localparam INCR16=3'b111;
    
-   //Burst Math
+   //HBURST
    logic [4:0] beat_cnt,next_beat_cnt;
    logic [ADDR_WIDTH-1:0] burst_base_addr, next_burst_base_addr;
    logic [ADDR_WIDTH-1:0] next_haddr_reg;
@@ -185,7 +185,7 @@ module ahb_subordinate_usb #(
        
        D_mode=TX_transferactive;
        
-       // Error Pipeline
+       // error cases
        if(error_state2) begin
            hready=1;
            hresp=1;
@@ -205,7 +205,7 @@ module ahb_subordinate_usb #(
        
        // FSM and Data processing
        end else if(hsel_reg && (htrans_reg==NONSEQ || htrans_reg==SEQ)) begin
-           if(haddr_reg==4'h0) begin
+           if(haddr_reg[3:2]==2'b00) begin
                case(state)
                    BYTE1: begin
                        if(!hwrite_reg) begin // READ
@@ -218,7 +218,12 @@ module ahb_subordinate_usb #(
                                    hready=0;
                                    next_state=BYTE2;
                                end else begin
-                                   hrdata={24'b0,RX_data};
+                                    case(haddr_reg[1:0]) 
+                                        2'b00:hrdata={24'b0,RX_data};
+                                        2'b01:hrdata={16'b0,RX_data,8'b0};
+                                        2'b10:hrdata={8'b0,RX_data,16'b0};
+                                        2'b11:hrdata={RX_data,24'b0};
+                                    endcase
                                end
                            end
                        end else begin // WRITE
@@ -233,19 +238,19 @@ module ahb_subordinate_usb #(
                                    store_tx_data = 1;
                                end
                                3'b001: begin 
-                                   next_tx_data  = hwdata[7:0];
+                                   next_tx_data = hwdata[7:0];
                                    store_tx_data = 1;
-                                   hready        = 0;
-                                   next_state    = BYTE2;
+                                   hready = 0;
+                                   next_state = BYTE2;
                                end
                                3'b010: begin 
-                                   next_tx_data  = hwdata[7:0];
+                                   next_tx_data = hwdata[7:0];
                                    store_tx_data = 1;
-                                   hready        = 0;
-                                   next_state    = BYTE2;
+                                   hready = 0;
+                                   next_state = BYTE2;
                                end
                                default: begin 
-                                   next_tx_data  = hwdata[7:0];
+                                   next_tx_data = hwdata[7:0];
                                    store_tx_data = 1;
                                end
                            endcase

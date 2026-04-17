@@ -11,6 +11,7 @@ filesets:
         #     - "fusesoc:core:name"
         depend:
             - "team066:ece337:usb_rx:1.0.0"
+            - "team066:ece337:ahb_subordinate_usb:1.0.0"
 
     synth:
         depend:

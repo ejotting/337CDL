@@ -249,9 +249,19 @@ module tb_ahb_subordinate_usb ();
         TX_transferactive=0;
         RX_packet='0;
         RX_dataready=0;
-        //expected hresp goes high
-        $display("Write to unmapped address");
-        enqueue_write(4'h2,2'b00,32'hFF);
+        //RAW hazard check reads something right ater a write
+        $display("Raw hazard check, reads something right after a write");
+        RX_dataready=1;
+        RX_data=8'hBB;
+        enqueue_write(4'h0,2'b01,16'hCCAA);
+        execute_transactions(1);
+        
+        enqueue_read(4'h1,2'b00,8'hBB);
+        execute_transactions(1);
+        finish_transactions();
+        //write one byte to one register, 
+        $display("Write to 0x2");
+        enqueue_write(4'h2,2'b00,8'hFF);
         execute_transactions(1);
         finish_transactions();
         $display("fake write, hsel low");
