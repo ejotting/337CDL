@@ -1,5 +1,5 @@
 CAPI=2:
-name: "u337mg235:ece337:counter_889:1.0.0"
+name: "team066:ece337:counter_889:1.0.0"
 description: ""
 
 filesets:
@@ -9,13 +9,13 @@ filesets:
         file_type: systemVerilogSource
         depend:
         #     - "fusesoc:core:name"
-            - "u337mg235:ece337:flex_counter:1.0.0"
+            - "team066:ece337:flex_counter:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
-            - "u337mg235:ece337:counter_889_syn"
-            - "u337mg235:ece337:flex_counter:1.0.0"
+            - "team066:ece337:counter_889_syn"
+            - "team066:ece337:flex_counter:1.0.0"
 
     tb:
         files:
@@ -25,15 +25,15 @@ filesets:
             # - "data/file.txt": { file_type: user }
         file_type: systemVerilogSource
         depend:
-            - "u337mg235:ece337:questafiles"
-            - "u337mg235:ece337:flex_counter:1.0.0"
+            - "team066:ece337:questafiles"
+            - "team066:ece337:flex_counter:1.0.0"
 
     synfiles:
         files:
             - "scripts/syn_counter_889.tcl"
         file_type: tclSource
         depend:
-            - "u337mg235:ece337:synfiles"
+            - "team066:ece337:synfiles"
 
 targets:
     default: &default
@@ -89,7 +89,7 @@ targets:
         toplevel: counter_889
         tools:
             design_compiler:
-                script_dir: "src/u337mg235_ece337_synfiles_0"
+                script_dir: "src/team066_ece337_synfiles_0"
                 dc_script: "synth.tcl"
                 report_dir: "reports"
                 target_library: "/home/ecegrid/a/ece337/summer24-refactor/tech/ami05/osu05_stdcells.db"
