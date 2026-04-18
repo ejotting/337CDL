@@ -15,7 +15,7 @@ module usb_rx #(
     output logic rx_error, //Done
     output logic store_rx_packet_data, //Done
     output logic [7:0]rx_packet_data, //Done
-    output logic flush
+    output logic flush //Done
 );
 
     logic dm, dp, new_edge, eof, data_out, sample_the_data, valid_bit, start5, start16,error;
