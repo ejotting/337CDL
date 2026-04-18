@@ -22,6 +22,7 @@ module tb_usb_rx ();
     string testcase8 = "Incorrect CRC";
     string testcase9 = "No Bit Stuff RX";
     string testcase10 = "Bit Stuff RX";
+    string testcase11 = "Full data buffer";
 
     // clockgen
     always begin
@@ -201,6 +202,23 @@ module tb_usb_rx ();
         dp_in = 1;
         repeat(9) @(negedge clk);
 
+        //Data buffer full
+        testname = testcase11;
+        buffer_occupancy = 7'd64;
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b01001011,dp_in,dm_in);
+        
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+
+        send_byte(8'b01010011,dp_in,dm_in);
+        send_byte(8'b11000111,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
         $finish;
     end
 endmodule
