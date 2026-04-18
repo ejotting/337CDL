@@ -7,6 +7,7 @@ module ahb_usb (
     input logic [3:0]haddr,
     input logic [1:0]htrans,
     input logic [1:0]hsize,
+    input logic [2:0] hburst,
     input logic hwrite,
     input logic [31:0]hwdata,
     
@@ -61,6 +62,35 @@ module ahb_usb (
         .tx_error(tx_error),
         .tx_transfer_active(tx_transfer_active)
     );
-
+    
+    ahb_subordinate_usb #(.ADDR_WIDTH(4),.DATA_WIDTH(4))
+        ahb(
+            .clk(clk),
+            .n_rst(n_rst),
+            .hsel(hsel),
+            .haddr(haddr),
+            .htrans(htrans),
+            .hsize(hsize),
+            .hwrite(hwrite),
+            .hwdata(hwdata),
+            .hburst(hburst),
+            .hrdata(hrdata),
+            .hresp(hresp),
+            .hready(hready),
+            .TX_error(tx_error),
+            .RX_error(rx_error),
+            .RX_dataready(rx_data_ready),
+            .RX_transferactive(rx_transfer_active),
+            .TX_transferactive(tx_transfer_active),
+            .RX_packet(rx_packet),
+            .RX_data(rx_data),
+            .bufferoccupancy(buffer_occupancy),
+            .TX_packet(tx_packet),
+            .TX_data(tx_data),
+            .clear(clear),
+            .get_rx_data(get_rx_data),
+            .store_tx_data(store_tx_data),
+            .D_mode(d_mode)
+        );
 endmodule
 

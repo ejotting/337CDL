@@ -26,6 +26,10 @@ add wave -noupdate /tb_ahb_subordinate_usb/hwdata
 add wave -noupdate /tb_ahb_subordinate_usb/hrdata
 add wave -noupdate /tb_ahb_subordinate_usb/hresp
 add wave -noupdate /tb_ahb_subordinate_usb/hready
+add wave -noupdate /tb_ahb_subordinate_usb/DUT/beat_cnt
+add wave -noupdate /tb_ahb_subordinate_usb/DUT/next_beat_cnt
+add wave -noupdate /tb_ahb_subordinate_usb/DUT/haddr_reg
+add wave -noupdate /tb_ahb_subordinate_usb/DUT/next_haddr_reg
 add wave -noupdate /tb_ahb_subordinate_usb/TX_error
 add wave -noupdate /tb_ahb_subordinate_usb/RX_error
 add wave -noupdate /tb_ahb_subordinate_usb/RX_dataready
@@ -40,10 +44,9 @@ add wave -noupdate /tb_ahb_subordinate_usb/clear
 add wave -noupdate /tb_ahb_subordinate_usb/get_rx_data
 add wave -noupdate /tb_ahb_subordinate_usb/store_tx_data
 add wave -noupdate /tb_ahb_subordinate_usb/D_mode
-add wave -noupdate /tb_ahb_subordinate_usb/hdata
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ps} 0}
-quietly wave cursor active 0
+WaveRestoreCursors {{Cursor 1} {421806 ps} 0}
+quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -58,4 +61,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {415068 ps} {430786 ps}
+WaveRestoreZoom {0 ps} {1008 ns}

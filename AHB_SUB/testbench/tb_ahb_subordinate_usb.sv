@@ -48,7 +48,7 @@ module tb_ahb_subordinate_usb ();
     endtask
 
     logic hsel;
-    logic [3:0] haddr;
+    logic [4:0] haddr;
     logic [2:0] hsize;
     logic [2:0] hburst;
     logic [1:0] htrans;
@@ -73,13 +73,13 @@ module tb_ahb_subordinate_usb ();
         .clk(clk),
         .n_rst(n_rst),
         .hsel(hsel),
-        .haddr(haddr),
+        .haddr(haddr[3:0]),
         .hsize(hsize),
         .htrans(htrans),
         .hwrite(hwrite),
         .hwdata(hwdata),
         .hburst(hburst),
-        .hrdata(hdata),
+        .hrdata(hrdata),
         .hresp(hresp),
         .hready(hready),
         .TX_error(TX_error),
@@ -99,7 +99,7 @@ module tb_ahb_subordinate_usb ();
     );
     // bus model connections
     ahb_model_updated #(
-        .ADDR_WIDTH(4),
+        .ADDR_WIDTH(5),
         .DATA_WIDTH(4)
     ) BFM ( .clk(clk),
         // AHB-Subordinate Side
@@ -165,7 +165,7 @@ module tb_ahb_subordinate_usb ();
             BFM.enqueue_transaction(1'b1, 1'b1, addr, data, 1'b0, {2'b0, size}, 3'b0, 1'b0);
         end
     endtask
-
+    
     // Write Transaction Intended for a different subordinate from yours
     task enqueue_fakewrite ( input logic [3:0] addr, input logic [1:0] size, input logic [31:0] wdata );
         logic [31:0] data [];
@@ -201,23 +201,189 @@ module tb_ahb_subordinate_usb ();
 
     initial begin
         n_rst = 1;
+        TX_error=0;
+        RX_error=0;
+        RX_dataready=1;
+        RX_transferactive=0;
+        TX_transferactive=0;
+        RX_packet='0;
+        RX_data='0;
+        bufferoccupancy='0;
         reset_model();
         reset_dut();
-
-        /****** EXAMPLE CODE ******/
-        // Always put data LSB-aligned. The model will automagically move bytes to their proper position.
-        enqueue_read(3'h1, 1'b0, 31'h00BB);
-        enqueue_write(3'h2, 1'b1, 31'h00BB);
         
-        // Example Burst Setup - Dynamic Array Required
-        data = new [8];
-        data = {32'h8888_8888, 32'h7777_7777,32'h6666_6666,32'h5555_5555,32'h4444_4444,32'h3333_3333,32'h2222_2222,32'h1111_1111};
-        enqueue_burst_read(4'hC, 1'b1, BURST_WRAP8, data);
-        execute_transactions(10); // Burst counts as 8 transactions for 8 beats
+        $display("RX pop");
+        RX_dataready=1;
+        RX_data=8'hA5;
+        enqueue_read(4'h0,2'b00,32'h000000A5);
+        execute_transactions(1);
+        
+        $display("RX stall");
+        RX_dataready=0;
+        RX_data=8'hBB;
+        enqueue_read(4'h0,2'b00,32'h000000BB);
+        RX_dataready<=#(CLK_PERIOD*3) 1'b1;
+        execute_transactions(1);
         finish_transactions();
-        /****** EXAMPLE CODE ******/
+        $display("TX push");
+        enqueue_write(4'h0,2'b00,32'h0000005a);
+        execute_transactions(1);
+        finish_transactions();
+        #(CLK_PERIOD*2);
+        $display("Read status");
+        RX_dataready=1;
+        RX_packet=3'b001; //in token
+        TX_transferactive=1;
+        enqueue_read(4'h4,2'b10,32'h00000203);
+        execute_transactions(1);
+        finish_transactions();
+        
+        //write to a read only register
+        $display("write to a status register, hresp should go high");
+        enqueue_write(4'h4,2'b10,32'hFFFFFFFF);
+        execute_transactions(1);
+        finish_transactions();
+        enqueue_read(4'h4,2'b10,32'h00000203);
+        execute_transactions(1);
+        finish_transactions();
+        TX_transferactive=0;
+        RX_packet='0;
+        RX_dataready=0;
+        //RAW hazard check reads something right ater a write
+        $display("Raw hazard check, reads something right after a write");
+        RX_dataready=1;
+        RX_data=8'hBB;
+        enqueue_write(4'h0,2'b01,16'hCCAA);
+        execute_transactions(1);
+        
+        enqueue_read(4'h1,2'b00,8'hBB);
+        execute_transactions(1);
+        finish_transactions();
+        //write one byte to one register, 
+        $display("Write to 0x2");
+        enqueue_write(4'h2,2'b00,8'hFF);
+        execute_transactions(1);
+        finish_transactions();
+        $display("fake write, hsel low");
+        enqueue_fakewrite(4'h0,2'b10,32'hAABBCCDD);
+        execute_transactions(1);
+        finish_transactions();
+        $display("Read error");
+        TX_error=1;
+        RX_error=1;
+        @(negedge clk);
+        enqueue_read(4'h6,2'b01,32'h00000101);
+        
+        execute_transactions(1);
+        #(1);
+        finish_transactions();
 
+        #(CLK_PERIOD);
+        RX_error=0;
+        TX_error=0;
+        
+        $display("Read buffer occupancy");
+        bufferoccupancy=7'd64;
+        enqueue_read(4'h8,2'b10,32'h00000040);
+        execute_transactions(1);
+        finish_transactions();
+        $display("read write TX packet");
+        enqueue_write(4'hC,2'b00,32'h0000004B); //DATA0
+        execute_transactions(1);
+        finish_transactions();
+        enqueue_read(4'hC, 2'b00,32'h00000002);
+        execute_transactions(1);
+        finish_transactions();
+       
+        $display("flush read/write");
+        // Change size to 2'b00 (Byte) and use 32'h100
+        enqueue_write(4'hD, 2'b00, 32'h00000001);
+        execute_transactions(1);
+        finish_transactions();
+
+
+        // Read immediately (size 2'b00)
+        enqueue_read(4'hD, 2'b00, 32'h00000100);
+        execute_transactions(1);
+        finish_transactions();
+
+
+        #(CLK_PERIOD);
+        // Read again to prove it cleared (size 2'b00)
+        enqueue_read(4'hD, 2'b00, 32'h00000000);
+        execute_transactions(1);
+        finish_transactions();
+
+        
+        //Multibyte
+        $display("Multibyte write");
+        enqueue_write(4'h0,2'b10,32'hAABBCCDD);
+        execute_transactions(1);
+        finish_transactions();
+
+        $display("Multibyte read");
+        RX_dataready=1;
+        RX_data=8'h77;
+        enqueue_read(4'b0,2'b10,32'h77777777);
+        execute_transactions(1);
+        finish_transactions();
+
+        $display("INCR8 test");
+        RX_dataready=1;
+        RX_data=8'hA5;
+        bufferoccupancy=7'd64;
+        RX_packet=3'b001;
+        TX_transferactive=1;
+        RX_transferactive=0;
+        data=new[8];
+        data[0]=32'hA5a5a5a5;
+        data[1]=32'h00000203;
+        data[2]=32'h00000040;
+        data[3]=32'h00000002;
+        //overflow
+        data[4]='0;
+        data[5]='0;
+        data[6]='0;
+        data[7]='0;
+        enqueue_burst_read(4'h0,2'b10,BURST_INCR8,data);
+        execute_transactions(8);
+        
+        finish_transactions();
+
+        $display("WRAP8 read");
+        RX_dataready=1;
+        RX_data=8'hA5;
+        bufferoccupancy=7'd64;
+        RX_packet=3'b001;
+        TX_transferactive=1;
+        RX_transferactive=0;
+        data=new[8];
+        
+        data[0]=32'h00000040;
+        data[1]=32'h00000002;
+        data[2]=32'ha5a5a5a5;
+        data[3]=32'h00000203;
+        data[4]=32'h00000040;
+        data[5]=32'h00000002;
+        data[6]=32'ha5a5a5a5;
+        data[7]=32'h00000203;
+        enqueue_burst_read(4'h8,2'b10,BURST_WRAP8,data);
+        execute_transactions(8);
+        finish_transactions();
+
+        $display("variable INCR (3)");
+        RX_dataready=1;
+        RX_data=8'ha5;
+        data=new[3];
+        data[0]=32'ha5a5a5a5;
+        data[1]=32'h00000203;
+        data[2]=32'h00000040;
+        enqueue_burst_read(4'h0,2'b10,BURST_INCR,data);
+        execute_transactions(3);
+        finish_transactions();
         $finish;
+
+
     end
 endmodule
 

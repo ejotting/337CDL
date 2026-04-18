@@ -28,15 +28,14 @@ module tx_fsm(
     //next state logic block
     always_comb begin
         next_state = state;
-        //todo
         if(shift_enable) begin
         case (state)
             IDLE: begin
                 if (strobe) begin
-                if (((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy > 0)||(tx_packet == 3'd3 || tx_packet == 3'd4 || tx_packet == 3'd5))
-                    next_state = LOAD_SYNC;
-                else if ((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy == 0)
-                    next_state = ERROR;
+                    if (((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy > 0)||(tx_packet == 3'd3 || tx_packet == 3'd4 || tx_packet == 3'd5))
+                        next_state = LOAD_SYNC;
+                    else if ((tx_packet == 3'd1 || tx_packet == 3'd2) && buffer_occupancy == 0)
+                        next_state = ERROR;
                 end
             end
             LOAD_SYNC: begin
@@ -59,7 +58,6 @@ module tx_fsm(
                 next_state = LOAD_DATA;
             end
             LOAD_DATA: begin
-                
                 next_state = SEND_DATA;
             end
             SEND_DATA: begin
@@ -94,7 +92,7 @@ module tx_fsm(
             end
             
         endcase
-        end //todo
+        end
     end
 
     //output logic block
