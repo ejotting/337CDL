@@ -1,27 +1,25 @@
 CAPI=2:
-name: "team066:ece337:bit_stuff_checker:1.0.0"
+name: "team066:ece337:synch:1.0.0"
 description: ""
 
 filesets:
     rtl:
         files:
-            - "source/bit_stuff_checker.sv"
+            - "source/synch.sv"
         file_type: systemVerilogSource
         # depend:
         #     - "fusesoc:core:name"
-        depend:
-            - "team066:ece337:flex_sr:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
-            - "team066:ece337:bit_stuff_checker_syn"
+            - "team066:ece337:synch_syn"
 
     tb:
         files:
-            - "testbench/tb_bit_stuff_checker.sv"
-            - "waves/bit_stuff_checker.do": { file_type: user }
-            - "waves/bit_stuff_checker.gtkw": { file_type: user }
+            - "testbench/tb_synch.sv"
+            - "waves/synch.do": { file_type: user }
+            - "waves/synch.gtkw": { file_type: user }
             # - "data/file.txt": { file_type: user }
         file_type: systemVerilogSource
         depend:
@@ -29,7 +27,7 @@ filesets:
 
     synfiles:
         files:
-            - "scripts/syn_bit_stuff_checker.tcl"
+            - "scripts/syn_synch.tcl"
         file_type: tclSource
         depend:
             - "team066:ece337:synfiles"
@@ -38,21 +36,21 @@ targets:
     default: &default
         filesets:
             - rtl
-        toplevel: bit_stuff_checker
+        toplevel: synch
 
     sim: &sim
         <<: *default
         default_tool: verilator
         filesets_append:
             - tb
-        toplevel: tb_bit_stuff_checker
+        toplevel: tb_synch
         tools:
             modelsim:
                 vsim_options:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
-                    - -do "source waves.tcl ; load_wave waves/bit_stuff_checker.do"
+                    - -do "source waves.tcl ; load_wave waves/synch.do"
                     - -onfinish stop
                     - -do "set PrefSource(OpenOnFinish) 0 ; set PrefMain(LinePrefix) \"\" ; set PrefMain(colorizeTranscript) 1"
                     - -coverage
@@ -85,7 +83,7 @@ targets:
         filesets_append:
             - synfiles
         default_tool: design_compiler
-        toplevel: bit_stuff_checker
+        toplevel: synch
         tools:
             design_compiler:
                 script_dir: "src/team066_ece337_synfiles_0"
