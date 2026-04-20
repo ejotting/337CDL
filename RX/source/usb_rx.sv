@@ -22,8 +22,8 @@ module usb_rx #(
     logic [15:0]shift_reg_val, crc16;
     logic [4:0]crc5;
 
-    sync SYNC1 (.clk(clk),.n_rst(n_rst),.async_in(dp_in),.sync_out(dp));
-    sync SYNC2 (.clk(clk),.n_rst(n_rst),.async_in(dm_in),.sync_out(dm));
+    synch SYNC1 (.clk(clk),.n_rst(n_rst),.async_in(dp_in),.sync_out(dp));
+    synch SYNC2 (.clk(clk),.n_rst(n_rst),.async_in(dm_in),.sync_out(dm));
 
     bit_decoder BITDECODE (.clk(clk),.n_rst(n_rst),.dp(dp),.dm(dm),
     .new_edge(new_edge),.eof(eof));
