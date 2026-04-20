@@ -49,6 +49,65 @@ module tb_usb_rx ();
     end
     endtask
 
+    task automatic send_IN(ref logic dp_in, ref logic dm_in);
+    begin
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b01101001,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+    end
+    endtask
+
+    task automatic send_OUT(ref logic dp_in, ref logic dm_in);
+    begin
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11100001,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+    end
+    endtask
+
+    task automatic send_DATA(ref logic dp_in, ref logic dm_in);
+    begin
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11000011,dp_in,dm_in);
+        
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+
+        send_byte(8'b01010011,dp_in,dm_in);
+        send_byte(8'b11000111,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+    end
+    endtask
+
+    task automatic send_ACK(ref logic dp_in, ref logic dm_in);
+    begin
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11010010,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+    end
+    endtask
+
     task reset_dut;
     begin
         n_rst = 0;
@@ -73,6 +132,8 @@ module tb_usb_rx ();
         testname = testcase1;
         //IN
         @(negedge clk);
+        send_IN(dp_in,dm_in);
+
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b01101001,dp_in,dm_in);
         send_byte(8'b01100110,dp_in,dm_in);
