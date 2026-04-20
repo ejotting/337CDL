@@ -2,7 +2,7 @@
 
 
 module ahb_subordinate_usb #(
-   parameter DATA_WIDTH=2,
+   parameter DATA_WIDTH=4,
    parameter ADDR_WIDTH=4
 ) (
    input logic clk, n_rst,
