@@ -1,35 +1,25 @@
 CAPI=2:
-name: "team066:ece337:usb_rx:1.0.0"
+name: "team066:ece337:synch:1.0.0"
 description: ""
 
 filesets:
     rtl:
         files:
-            - "source/usb_rx.sv"
+            - "source/synch.sv"
         file_type: systemVerilogSource
         # depend:
         #     - "fusesoc:core:name"
-        depend:
-            - "team066:ece337:bit_decoder:1.0.0"
-            - "team066:ece337:data_clk_gen:1.0.0"
-            - "team066:ece337:flex_ctr:1.0.0"
-            - "team066:ece337:rx_fsm:1.0.0"
-            - "team066:ece337:shift_reg:1.0.0"
-            - "team066:ece337:synch:1.0.0"
-            - "team066:ece337:crc5:1.0.0"
-            - "team066:ece337:crc16:1.0.0"
-            - "team066:ece337:bit_stuff_checker:1.0.0"
 
     synth:
         depend:
             - "ece337:tech:AMI_05_LIB"
-            - "team066:ece337:usb_rx_syn"
+            - "team066:ece337:synch_syn"
 
     tb:
         files:
-            - "testbench/tb_usb_rx.sv"
-            - "waves/usb_rx.do": { file_type: user }
-            - "waves/usb_rx.gtkw": { file_type: user }
+            - "testbench/tb_synch.sv"
+            - "waves/synch.do": { file_type: user }
+            - "waves/synch.gtkw": { file_type: user }
             # - "data/file.txt": { file_type: user }
         file_type: systemVerilogSource
         depend:
@@ -37,7 +27,7 @@ filesets:
 
     synfiles:
         files:
-            - "scripts/syn_usb_rx.tcl"
+            - "scripts/syn_synch.tcl"
         file_type: tclSource
         depend:
             - "team066:ece337:synfiles"
@@ -46,21 +36,21 @@ targets:
     default: &default
         filesets:
             - rtl
-        toplevel: usb_rx
+        toplevel: synch
 
     sim: &sim
         <<: *default
         default_tool: verilator
         filesets_append:
             - tb
-        toplevel: tb_usb_rx
+        toplevel: tb_synch
         tools:
             modelsim:
                 vsim_options:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
-                    - -do "source waves.tcl ; load_wave waves/usb_rx.do"
+                    - -do "source waves.tcl ; load_wave waves/synch.do"
                     - -onfinish stop
                     - -do "set PrefSource(OpenOnFinish) 0 ; set PrefMain(LinePrefix) \"\" ; set PrefMain(colorizeTranscript) 1"
                     - -coverage
@@ -93,7 +83,7 @@ targets:
         filesets_append:
             - synfiles
         default_tool: design_compiler
-        toplevel: usb_rx
+        toplevel: synch
         tools:
             design_compiler:
                 script_dir: "src/team066_ece337_synfiles_0"

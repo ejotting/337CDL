@@ -6,7 +6,7 @@ module ahb_usb (
     input logic hsel,
     input logic [3:0]haddr,
     input logic [1:0]htrans,
-    input logic [1:0]hsize,
+    input logic [2:0]hsize,
     input logic [2:0] hburst,
     input logic hwrite,
     input logic [31:0]hwdata,

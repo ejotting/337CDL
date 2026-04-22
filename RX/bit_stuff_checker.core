@@ -10,7 +10,7 @@ filesets:
         # depend:
         #     - "fusesoc:core:name"
         depend:
-            - "u337mg127:ece337:flex_sr:1.0.0"
+            - "team066:ece337:flex_sr:1.0.0"
 
     synth:
         depend:

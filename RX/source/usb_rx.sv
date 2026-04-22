@@ -15,15 +15,15 @@ module usb_rx #(
     output logic rx_error, //Done
     output logic store_rx_packet_data, //Done
     output logic [7:0]rx_packet_data, //Done
-    output logic flush
+    output logic flush //Done
 );
 
     logic dm, dp, new_edge, eof, data_out, sample_the_data, valid_bit, start5, start16,error;
     logic [15:0]shift_reg_val, crc16;
     logic [4:0]crc5;
 
-    sync SYNC1 (.clk(clk),.n_rst(n_rst),.async_in(dp_in),.sync_out(dp));
-    sync SYNC2 (.clk(clk),.n_rst(n_rst),.async_in(dm_in),.sync_out(dm));
+    synch SYNC1 (.clk(clk),.n_rst(n_rst),.async_in(dp_in),.sync_out(dp));
+    synch SYNC2 (.clk(clk),.n_rst(n_rst),.async_in(dm_in),.sync_out(dm));
 
     bit_decoder BITDECODE (.clk(clk),.n_rst(n_rst),.dp(dp),.dm(dm),
     .new_edge(new_edge),.eof(eof));
