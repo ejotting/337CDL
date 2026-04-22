@@ -7,7 +7,7 @@ module crc_generate(
     logic [15:0] shifted, crc;
     logic [15:0] next_crc;
 
-    always_comb begin //TODO use thomas's code and try it.
+    always_comb begin
         //default
         next_crc = crc;
         shifted = {crc[14:0], 1'b0}; 
