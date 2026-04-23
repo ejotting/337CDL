@@ -170,6 +170,8 @@ module tb_ahb_usb ();
         reset_dut;
 
         @(negedge clk);
+
+        
         mtx_data[0]=32'h00000011;
         mtx_data[1]=32'h00002200;
         mtx_data[2]=32'h00330000;
@@ -198,10 +200,63 @@ module tb_ahb_usb ();
                 $display("Beat %d failed, expected %h got %h",i, mtx_data[i],mrx_data[i]);
             end
         end
-        /*send_IN(dp_in,dm_in);
+
+        send_IN(dp_in,dm_in);
         send_OUT(dp_in,dm_in);
         send_DATA(dp_in,dm_in);
-        send_ACK(dp_in,dm_in);*/
+        send_ACK(dp_in,dm_in);
+        
+//testing TX here
+        @(negedge clk);
+        hsel = 1;
+        hwrite = 1;
+        hburst = 3'b11; 
+        hsize = 3'b010;
+        htrans = 2'b10;
+        haddr = 4'h0;
+        
+        @(negedge clk);
+        while (!hready) @(negedge clk); //continue clk until done with transfers
+        hwdata = 32'h11; 
+        htrans = 2'b11; 
+        haddr = 4'd1;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'h22;  
+        htrans = 2'b11; 
+        haddr = 4'd2;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'h33;  
+        htrans = 2'b11; 
+        haddr = 4'd3;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'h44; 
+        htrans = 2'b0; 
+        hsel = 0;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+
+        repeat(3) @(negedge clk);
+        hsel = 1;
+        hwrite = 1;
+        hburst = 3'b0;  
+        htrans = 2'b10;    
+        haddr = 4'hC; //write to C address. this is the only time it enables the TX to output.
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'hC3;    //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0)
+        htrans = 2'b0;
+        hsel = 0;
+
+        repeat(2000) @(negedge clk);
+
         $finish;
     end
 endmodule
