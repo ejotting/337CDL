@@ -124,6 +124,7 @@ module tb_ahb_usb ();
            while(!hready) @(negedge clk);
            
            if(iswrite) begin
+                
                hwdata=wdata[i];
            end else begin
                rdata[i]=hrdata; // Perfectly timed normal read!

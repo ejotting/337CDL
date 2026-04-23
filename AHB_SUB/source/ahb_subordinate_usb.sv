@@ -175,7 +175,7 @@ module ahb_subordinate_usb #(
        get_rx_data=0;
        next_error_state=0;
        next_error_state2=0;
-       next_tx_data = TX_data;
+       TX_data='0;
        next_state = state;
        next_buffer = buffer;
        
@@ -230,27 +230,27 @@ module ahb_subordinate_usb #(
                            case (hsize_reg)
                                3'b000: begin 
                                    case (haddr_reg[1:0])
-                                       2'b00: next_tx_data = hwdata[7:0];
-                                       2'b01: next_tx_data = hwdata[15:8];
-                                       2'b10: next_tx_data = hwdata[23:16];
-                                       2'b11: next_tx_data = hwdata[31:24];
+                                       2'b00: TX_data = hwdata[7:0];
+                                       2'b01: TX_data = hwdata[15:8];
+                                       2'b10: TX_data = hwdata[23:16];
+                                       2'b11: TX_data = hwdata[31:24];
                                    endcase
                                    store_tx_data = 1;
                                end
                                3'b001: begin 
-                                   next_tx_data = hwdata[7:0];
+                                   TX_data = hwdata[7:0];
                                    store_tx_data = 1;
                                    hready = 0;
                                    next_state = BYTE2;
                                end
                                3'b010: begin 
-                                   next_tx_data = hwdata[7:0];
+                                   TX_data = hwdata[7:0];
                                    store_tx_data = 1;
                                    hready = 0;
                                    next_state = BYTE2;
                                end
                                default: begin 
-                                   next_tx_data = hwdata[7:0];
+                                   TX_data = hwdata[7:0];
                                    store_tx_data = 1;
                                end
                            endcase
@@ -271,7 +271,7 @@ module ahb_subordinate_usb #(
                            end
                        end
                        else begin
-                           next_tx_data=hwdata[15:8];
+                           TX_data=hwdata[15:8];
                            store_tx_data=1;
                            if(hsize_reg>=3'b010) begin
                                hready=0;
@@ -294,7 +294,7 @@ module ahb_subordinate_usb #(
                            end
                        end
                        else begin
-                           next_tx_data=hwdata[23:16];
+                           TX_data=hwdata[23:16];
                            store_tx_data=1;
                            if(hsize_reg>=3'b010) begin
                                hready=0;
@@ -309,7 +309,7 @@ module ahb_subordinate_usb #(
                            get_rx_data=1; 
                            hrdata={RX_data,buffer[23:0]};
                        end else begin
-                           next_tx_data=hwdata[31:24];
+                           TX_data=hwdata[31:24];
                            store_tx_data=1;
                        end
                    end
@@ -389,7 +389,7 @@ module ahb_subordinate_usb #(
            error_state<='0;
            error_state2<='0;
            TX_packet<='0;
-           TX_data<='0;
+          
            clear<='0;
            tx_active_prev<='0;
            beat_cnt<='0;
@@ -411,7 +411,7 @@ module ahb_subordinate_usb #(
            error_state<=next_error_state;
            error_state2<=next_error_state2;
            TX_packet<=next_tx_packet;
-           TX_data<=next_tx_data;
+           
            clear<=next_clear;
            tx_active_prev<=TX_transferactive;
            hazard_stall<=raw_hazard;
