@@ -102,11 +102,11 @@ module tb_ahb_usb ();
         
         send_byte(8'b01111110,dp_in,dm_in);
         repeat(8) @(negedge clk);
-        send_byte(8'b00010000,dp_in,dm_in);
-        send_byte(8'b01100110,dp_in,dm_in);
-
-        send_byte(8'b10100100,dp_in,dm_in);
-        send_byte(8'b01000110,dp_in,dm_in);
+        send_byte(8'h10,dp_in,dm_in);
+        send_byte(8'h66,dp_in,dm_in);
+        
+        send_byte(8'hA4,dp_in,dm_in);
+        send_byte(8'h46,dp_in,dm_in);
         dp_in = 0;
         dm_in = 0;
         repeat(16) @(negedge clk);
@@ -171,9 +171,27 @@ module tb_ahb_usb ();
         hwrite=0;
         hsize=3'b001;
         hburst=3'b100;
-        htrans=3'b10;
+        htrans=2'b10;
         haddr=current_addr;
-
+        for(i=0;i<8;i++) begin
+            @(negedge clk);
+            while(!hready) @(negedge clk);
+            rdata[i]=hrdata;
+            if(i<7) begin
+                htrans=2'b11;
+                current_addr=current_addr+4'd2;
+                haddr=current_addr;
+            end else begin
+                htrans='0;
+                hsel=0;
+            end
+        end
+            
+        
+       
+   
+   end
+   endtask
 
 
     ahb_usb #() DUT (.clk(clk),.n_rst(n_rst),.hsel(hsel),.haddr(haddr),
@@ -182,6 +200,7 @@ module tb_ahb_usb ();
 
     logic [31:0] mtx_data [4];
     logic [31:0] mrx_data [4];
+    logic [31:0] mrx_data_wrap[8];
     integer i;
     initial begin
         n_rst = 1;
@@ -227,14 +246,28 @@ module tb_ahb_usb ();
                 $display("Beat %d failed, expected %h got %h",i, mtx_data[i],mrx_data[i]);
             end
         end
-
+        $display("Send good packet");
+        send_DATA(dp_in,dm_in);
+        //$display("Send err packet");
+        //send_ERROR(dp_in,dm_in);
+        ahb_burstwrap8(4'hE, mrx_data_wrap);
+        $display("wrap results");
+        $display("Beat 0, add 0xE %h ",mrx_data_wrap[0]);
+        $display("Beat 1, add 0x0 %h ",mrx_data_wrap[1]);
+        $display("Beat 2, add 0x2 %h ",mrx_data_wrap[2]);
+        $display("Beat 3, add 0x4 %h ",mrx_data_wrap[3]);
+        $display("Beat 4, add 0x6 %h ",mrx_data_wrap[4]);
+        $display("Beat 5, add 0x8 %h ",mrx_data_wrap[5]);
+        $display("Beat 6, add 0xA %h ",mrx_data_wrap[6]);
+        $display("Beat 7, add 0xC %h ",mrx_data_wrap[7]);
+        /*
         send_IN(dp_in,dm_in);
         send_OUT(dp_in,dm_in);
         send_DATA(dp_in,dm_in);
-        send_ACK(dp_in,dm_in);
+        send_ACK(dp_in,dm_in);*/
         
 //testing TX here
-        @(negedge clk);
+       /* @(negedge clk);
         hsel = 1;
         hwrite = 1;
         hburst = 3'b11; 
@@ -283,7 +316,7 @@ module tb_ahb_usb ();
         hsel = 0;
 
         repeat(2000) @(negedge clk);
-
+*/
         $finish;
     end
 endmodule
