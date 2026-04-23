@@ -16,36 +16,41 @@ add wave -noupdate /tb_ahb_subordinate_usb/HTRANS_SEQ
 add wave -noupdate /tb_ahb_subordinate_usb/HTRANS_NONSEQ
 add wave -noupdate /tb_ahb_subordinate_usb/clk
 add wave -noupdate /tb_ahb_subordinate_usb/n_rst
+add wave -noupdate -divider input
+add wave -noupdate /tb_ahb_subordinate_usb/RX_packet
+add wave -noupdate /tb_ahb_subordinate_usb/RX_dataready
+add wave -noupdate /tb_ahb_subordinate_usb/RX_transferactive
+add wave -noupdate /tb_ahb_subordinate_usb/RX_error
+add wave -noupdate /tb_ahb_subordinate_usb/bufferoccupancy
+add wave -noupdate /tb_ahb_subordinate_usb/RX_data
+add wave -noupdate /tb_ahb_subordinate_usb/TX_transferactive
+add wave -noupdate /tb_ahb_subordinate_usb/TX_error
+add wave -noupdate -divider {top-level input}
 add wave -noupdate /tb_ahb_subordinate_usb/hsel
 add wave -noupdate /tb_ahb_subordinate_usb/haddr
-add wave -noupdate /tb_ahb_subordinate_usb/hsize
-add wave -noupdate /tb_ahb_subordinate_usb/hburst
 add wave -noupdate /tb_ahb_subordinate_usb/htrans
+add wave -noupdate /tb_ahb_subordinate_usb/hsize
 add wave -noupdate /tb_ahb_subordinate_usb/hwrite
 add wave -noupdate /tb_ahb_subordinate_usb/hwdata
-add wave -noupdate /tb_ahb_subordinate_usb/hrdata
-add wave -noupdate /tb_ahb_subordinate_usb/hresp
-add wave -noupdate /tb_ahb_subordinate_usb/hready
+add wave -noupdate /tb_ahb_subordinate_usb/hburst
+add wave -noupdate -divider burst
 add wave -noupdate /tb_ahb_subordinate_usb/DUT/beat_cnt
 add wave -noupdate /tb_ahb_subordinate_usb/DUT/next_beat_cnt
 add wave -noupdate /tb_ahb_subordinate_usb/DUT/haddr_reg
 add wave -noupdate /tb_ahb_subordinate_usb/DUT/next_haddr_reg
-add wave -noupdate /tb_ahb_subordinate_usb/TX_error
-add wave -noupdate /tb_ahb_subordinate_usb/RX_error
-add wave -noupdate /tb_ahb_subordinate_usb/RX_dataready
-add wave -noupdate /tb_ahb_subordinate_usb/RX_transferactive
-add wave -noupdate /tb_ahb_subordinate_usb/TX_transferactive
-add wave -noupdate /tb_ahb_subordinate_usb/RX_packet
-add wave -noupdate /tb_ahb_subordinate_usb/TX_packet
-add wave -noupdate /tb_ahb_subordinate_usb/RX_data
-add wave -noupdate /tb_ahb_subordinate_usb/TX_data
-add wave -noupdate /tb_ahb_subordinate_usb/bufferoccupancy
-add wave -noupdate /tb_ahb_subordinate_usb/clear
+add wave -noupdate -divider output
+add wave -noupdate /tb_ahb_subordinate_usb/D_mode
 add wave -noupdate /tb_ahb_subordinate_usb/get_rx_data
 add wave -noupdate /tb_ahb_subordinate_usb/store_tx_data
-add wave -noupdate /tb_ahb_subordinate_usb/D_mode
+add wave -noupdate /tb_ahb_subordinate_usb/TX_data
+add wave -noupdate /tb_ahb_subordinate_usb/clear
+add wave -noupdate /tb_ahb_subordinate_usb/TX_packet
+add wave -noupdate -divider {top-level output}
+add wave -noupdate /tb_ahb_subordinate_usb/hrdata
+add wave -noupdate /tb_ahb_subordinate_usb/hresp
+add wave -noupdate /tb_ahb_subordinate_usb/hready
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {421806 ps} 0}
+WaveRestoreCursors {{Cursor 1} {397614 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
