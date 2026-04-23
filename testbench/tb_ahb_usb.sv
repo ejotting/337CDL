@@ -12,10 +12,12 @@ module tb_ahb_usb ();
 
     logic clk, n_rst, dp_in, dm_in, hsel, hwrite;
     logic [3:0]haddr;
-    logic [1:0]htrans, hsize;
+    logic [1:0]htrans;
+    logic [2:0] hsize;
     logic [2:0]hburst;
     logic [31:0]hwdata;
-
+    logic [31:0] hrdata;
+    logic hready, hresp;
     // clockgen
     always begin
         clk = 0;
@@ -108,11 +110,51 @@ module tb_ahb_usb ();
         repeat(9) @(negedge clk);
     end
     endtask
+    task automatic ahb_burst(input logic iswrite,input logic [3:0] start_addr, input logic [2:0] burst_mode, input logic [31:0] wdata [4],output logic [31:0] rdata [4]);
+   begin  
+       integer i;
+       logic [3:0] current_addr;
+       current_addr=start_addr;
+       
+       @(negedge clk);
+       hsel=1; hwrite=iswrite; hsize='0; hburst=burst_mode; htrans=2'b10; haddr=current_addr;
+       
+       for(i=0;i<4;i++) begin
+           @(negedge clk);
+           while(!hready) @(negedge clk);
+           
+           if(iswrite) begin
+               hwdata=wdata[i];
+           end else begin
+               rdata[i]=hrdata; // Perfectly timed normal read!
+           end
+           
+           if(i < 3) begin
+               htrans=2'b11;
+               current_addr=current_addr+1;
+               haddr=current_addr;
+           end else begin
+               htrans='0;
+               hsel=0;
+           end
+       end
+       @(negedge clk);
+       while(!hready) @(negedge clk);
+       @(negedge clk);
+       
+   end
+   endtask
+
+
+
 
     ahb_usb #() DUT (.clk(clk),.n_rst(n_rst),.hsel(hsel),.haddr(haddr),
-    .htrans(htrans),.hsize(hsize),.hburst(hburst),.hwrite(hwrite),.hwdata(hwdata),
+    .htrans(htrans),.hsize(hsize),.hburst(hburst),.hwrite(hwrite),.hwdata(hwdata),.hrdata(hrdata),.hready(hready),.hresp(hresp),
     .dp_in(dp_in),.dm_in(dm_in));
 
+    logic [31:0] mtx_data [4];
+    logic [31:0] mrx_data [4];
+    integer i;
     initial begin
         n_rst = 1;
         hsel = 0;
@@ -127,10 +169,38 @@ module tb_ahb_usb ();
         reset_dut;
 
         @(negedge clk);
-        send_IN(dp_in,dm_in);
+        mtx_data[0]=32'h00000011;
+        mtx_data[1]=32'h00002200;
+        mtx_data[2]=32'h00330000;
+        mtx_data[3]=32'h44000000;
+        /*mtx_data[4]=32'h00000055;
+        mtx_data[5]=32'h00006600;
+        mtx_data[6]=32'h00770000;
+        mtx_data[7]=32'h88000000;*/
+        $display("First INCR4 write");
+        ahb_burst(1'b1,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
+        /*$display("Second INCR4 write");
+        ahb_burst(1'b1,4'h0,3'b011,mtx_data[4:7],mrx_data[4:7]);
+        send_DATA(dp_in,dm_in);*/
+      
+        $display("First INCR4 read");
+        ahb_burst(1'b0,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
+        @(negedge clk);
+        /*$display("Second INCR4 read");
+        ahb_burst(1'b0,4'h0,3'b011,mtx_data[4:7],mrx_data[4:7]);*/
+        @(negedge clk);
+        $display("Verify INCR4 Write");
+        for(int i=0;i<4;i++) begin
+            if(mrx_data[i]==mtx_data[i]) begin
+                $display("Beat %d passed",i);
+            end else begin
+                $display("Beat %d failed, expected %h got %h",i, mtx_data[i],mrx_data[i]);
+            end
+        end
+        /*send_IN(dp_in,dm_in);
         send_OUT(dp_in,dm_in);
         send_DATA(dp_in,dm_in);
-        send_ACK(dp_in,dm_in);
+        send_ACK(dp_in,dm_in);*/
         $finish;
     end
 endmodule

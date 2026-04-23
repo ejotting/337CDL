@@ -209,7 +209,7 @@ module ahb_subordinate_usb #(
                case(state)
                    BYTE1: begin
                        if(!hwrite_reg) begin // READ
-                           if(RX_dataready==0) begin
+                           if(bufferoccupancy==0) begin
                                hready=0;
                            end else begin
                                get_rx_data=1;

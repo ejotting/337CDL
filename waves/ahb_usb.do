@@ -56,7 +56,6 @@ add wave -noupdate -divider AHB
 add wave -noupdate /tb_ahb_usb/DUT/ahb/clk
 add wave -noupdate /tb_ahb_usb/DUT/ahb/n_rst
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsel
-add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr
 add wave -noupdate /tb_ahb_usb/DUT/ahb/htrans
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsize
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hwrite
@@ -80,6 +79,7 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/get_rx_data
 add wave -noupdate /tb_ahb_usb/DUT/ahb/store_tx_data
 add wave -noupdate /tb_ahb_usb/DUT/ahb/D_mode
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsel_reg
+add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr
 add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/htrans_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsize_reg
@@ -136,7 +136,7 @@ add wave -noupdate /tb_ahb_usb/DUT/DB/next_read_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/write_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/next_write_ptr
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {5880457 ps} 0}
+WaveRestoreCursors {{Cursor 1} {392270 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -152,4 +152,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {5030650 ps} {17903650 ps}
+WaveRestoreZoom {161507 ps} {392270 ps}
