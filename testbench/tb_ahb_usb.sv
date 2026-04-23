@@ -104,9 +104,12 @@ module tb_ahb_usb ();
         repeat(8) @(negedge clk);
         send_byte(8'b00010000,dp_in,dm_in);
         send_byte(8'b01100110,dp_in,dm_in);
-
-        send_byte(8'b10100100,dp_in,dm_in);
+        send_byte(8'b01000111,dp_in,dm_in);
         send_byte(8'b01000110,dp_in,dm_in);
+        send_byte(8'b01110110,dp_in,dm_in);
+
+        send_byte(8'b01000111,dp_in,dm_in);
+        send_byte(8'b01101100,dp_in,dm_in);
         dp_in = 0;
         dm_in = 0;
         repeat(16) @(negedge clk);
