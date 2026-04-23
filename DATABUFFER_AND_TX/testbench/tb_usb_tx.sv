@@ -103,7 +103,6 @@ module tb_usb_tx ();
         set_inputs(7'd0, 8'b10001010, 3'd0);
         repeat(40) @(negedge clk);
 
-
         $display("Transmit ACK");
         set_inputs(7'd8, 8'b10101010, 3'd3);
         repeat(200) @(negedge clk);
