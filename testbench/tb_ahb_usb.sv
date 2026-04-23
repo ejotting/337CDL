@@ -129,7 +129,7 @@ module tb_ahb_usb ();
         repeat(9) @(negedge clk);
     end
     endtask
-    task automatic ahb_burstincr4(input logic iswrite,input logic [3:0] start_addr, input logic [2:0] burst_mode, input logic [31:0] wdata [4],output logic [31:0] rdata [4]);
+    task automatic ahb_burstincr4(input logic iswrite,input logic [3:0] start_addr, input logic [2:0] burst_mode, input logic [15:0] wdata [4],output logic [15:0] rdata [4]);
     begin  
         integer i;
         logic [3:0] current_addr;
@@ -157,15 +157,44 @@ module tb_ahb_usb ();
                htrans='0;
                hsel=0;
             end
-       end
-       @(negedge clk);
-       while(!hready) @(negedge clk);
-       @(negedge clk);
+        end
+        @(negedge clk);
+        while(!hready) @(negedge clk);
+        @(negedge clk);
        
-   end
-   endtask
-   task automatic ahb_burstwrap8(input logic [3:0] start_addr, output logic [31:0] rdata [8]);
-   begin
+    end
+    endtask
+    task automatic ahb_burst_variable_incr(input logic [3:0] start_addr, input integer beats, output logic [31:0] rdata []);
+    begin
+        
+        integer i;
+        logic [3:0] current_addr;
+        rdata=new[beats];
+        current_addr=start_addr;
+        @(negedge clk);
+        hsel=1;
+        hwrite=0;
+        hsize=3'b010;
+        hburst=3'b001;
+        htrans=2'b10;
+        haddr=current_addr;
+        for(i=0;i<beats;i++) begin
+            @(negedge clk);
+            while(!hready) @(negedge clk);
+            rdata[i]=hrdata;
+            if(i<(beats-1))begin
+                htrans=2'b11;
+                current_addr=current_addr+4'd4;
+                haddr=current_addr;
+            end else begin
+                htrans=2'b00;
+                hsel=0;
+            end
+        end
+    end 
+    endtask
+    task automatic ahb_burstwrap8(input logic [3:0] start_addr, output logic [15:0] rdata [8]);
+    begin
         integer i;
         logic [3:0] current_addr;
         current_addr=start_addr;
@@ -191,19 +220,20 @@ module tb_ahb_usb ();
         end
             
         
-       
-   
-   end
-   endtask
+         
+    end
+    endtask
 
-
+ 
     ahb_usb #() DUT (.clk(clk),.n_rst(n_rst),.hsel(hsel),.haddr(haddr),
     .htrans(htrans),.hsize(hsize),.hburst(hburst),.hwrite(hwrite),.hwdata(hwdata),.hrdata(hrdata),.hready(hready),.hresp(hresp),
     .dp_in(dp_in),.dm_in(dm_in));
 
-    logic [31:0] mtx_data [4];
-    logic [31:0] mrx_data [4];
-    logic [31:0] mrx_data_wrap[8];
+    logic [15:0] mtx_data [4];
+    logic [15:0] mrx_data [4];
+    logic [15:0] mrx_data_wrap[8];
+    logic [31:0] incr3[];
+    logic [31:0] incr5[];
     integer i;
     initial begin
         n_rst = 1;
@@ -251,8 +281,7 @@ module tb_ahb_usb ();
         end
         $display("Send good packet");
         send_DATA(dp_in,dm_in);
-        //$display("Send err packet");
-        //send_ERROR(dp_in,dm_in);
+
         ahb_burstwrap8(4'hE, mrx_data_wrap);
         $display("wrap results");
         $display("Beat 0, add 0xE %h ",mrx_data_wrap[0]);
@@ -263,6 +292,35 @@ module tb_ahb_usb ();
         $display("Beat 5, add 0x8 %h ",mrx_data_wrap[5]);
         $display("Beat 6, add 0xA %h ",mrx_data_wrap[6]);
         $display("Beat 7, add 0xC %h ",mrx_data_wrap[7]);
+        $display("Starting flush");
+        hsel=1;
+        haddr=4'hD;
+        hwrite=1;
+        hwdata=32'h00000100;
+        htrans=2'b10;
+        @(negedge clk);
+        while(!hready ) @(negedge clk);
+        hsel=0;
+        htrans='0;
+        @(negedge clk);
+        
+        htrans=2'b10;
+        @(negedge clk);
+        while(!hready) @(negedge clk);
+        $display("Post flush flush register %h", hrdata);
+        @(negedge clk);
+        hsel=0;
+        htrans=2'b00;
+        send_DATA(dp_in,dm_in);
+        $display("variable INCR3 starting at 0x4");
+        ahb_burst_variable_incr(4'h4,3,incr3);
+        $display("variable incr3 results");
+        $display("Beat 0, add 0x4 %h ",incr3[0]);
+        $display("Beat 1, add 0x8 %h ",incr3[1]);
+        $display("Beat 2, add 0xC %h ",incr3[2]);
+        $display("Variable incr5, expected two case error state");
+        ahb_burst_variable_incr(4'h0,5,incr5);
+
         /*
         send_IN(dp_in,dm_in);
         send_OUT(dp_in,dm_in);
