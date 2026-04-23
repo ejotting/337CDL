@@ -1,6 +1,6 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -divider RX
+add wave -noupdate -divider -height 30 RX
 add wave -noupdate /tb_ahb_usb/DUT/RX/clk
 add wave -noupdate /tb_ahb_usb/DUT/RX/n_rst
 add wave -noupdate /tb_ahb_usb/DUT/RX/dm_in
@@ -27,33 +27,35 @@ add wave -noupdate /tb_ahb_usb/DUT/RX/shift_reg_val
 add wave -noupdate /tb_ahb_usb/DUT/RX/crc16
 add wave -noupdate /tb_ahb_usb/DUT/RX/crc5
 add wave -noupdate /tb_ahb_usb/DUT/RX/CTRLOGIC/state
-add wave -noupdate -divider TX
+add wave -noupdate -divider -height 30 TX
 add wave -noupdate /tb_ahb_usb/DUT/TX/clk
 add wave -noupdate /tb_ahb_usb/DUT/TX/n_rst
+add wave -noupdate /tb_ahb_usb/DUT/TX/strobe
+add wave -noupdate -divider {TX input}
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/TX/buffer_occupancy
 add wave -noupdate -radix binary /tb_ahb_usb/DUT/TX/tx_packet_data
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/TX/tx_packet
-add wave -noupdate /tb_ahb_usb/DUT/TX/myPTS/serial_out
-add wave -noupdate -color Yellow /tb_ahb_usb/DUT/TX/dp_out
-add wave -noupdate -color Yellow /tb_ahb_usb/DUT/TX/dm_out
+add wave -noupdate -divider {TX output}
 add wave -noupdate /tb_ahb_usb/DUT/TX/get_tx_packet_data
 add wave -noupdate /tb_ahb_usb/DUT/TX/tx_error
 add wave -noupdate /tb_ahb_usb/DUT/TX/tx_transfer_active
-add wave -noupdate /tb_ahb_usb/DUT/TX/myNRZI/end_of_packet
-add wave -noupdate /tb_ahb_usb/DUT/TX/bs_shift_enable
-add wave -noupdate /tb_ahb_usb/DUT/TX/next_end_of_packet
-add wave -noupdate /tb_ahb_usb/DUT/TX/strobe
-add wave -noupdate /tb_ahb_usb/DUT/TX/data_done
-add wave -noupdate /tb_ahb_usb/DUT/TX/crc_out
-add wave -noupdate /tb_ahb_usb/DUT/TX/end_of_packet
-add wave -noupdate /tb_ahb_usb/DUT/TX/load_enable
+add wave -noupdate -color {Light Blue} /tb_ahb_usb/DUT/TX/myPTS/serial_out
+add wave -noupdate -color Cyan /tb_ahb_usb/DUT/TX/dp_out
+add wave -noupdate -color Cyan /tb_ahb_usb/DUT/TX/dm_out
+add wave -noupdate /tb_ahb_usb/DUT/TX/myFSM/state
 add wave -noupdate /tb_ahb_usb/DUT/TX/enable_crc
+add wave -noupdate /tb_ahb_usb/DUT/TX/crc_out
 add wave -noupdate /tb_ahb_usb/DUT/TX/data_out
+add wave -noupdate /tb_ahb_usb/DUT/TX/data_done
+add wave -noupdate /tb_ahb_usb/DUT/TX/load_enable
+add wave -noupdate /tb_ahb_usb/DUT/TX/next_end_of_packet
+add wave -noupdate /tb_ahb_usb/DUT/TX/end_of_packet
+add wave -noupdate -divider {TX bit stuffing}
 add wave -noupdate /tb_ahb_usb/DUT/TX/pts_serial_out
 add wave -noupdate /tb_ahb_usb/DUT/TX/bs_serial_out
-add wave -noupdate /tb_ahb_usb/DUT/TX/count
-add wave -noupdate /tb_ahb_usb/DUT/TX/myFSM/state
-add wave -noupdate -divider AHB
+add wave -noupdate /tb_ahb_usb/DUT/TX/bs_shift_enable
+add wave -noupdate -color Khaki /tb_ahb_usb/DUT/TX/myPTS/serial_out
+add wave -noupdate -divider -height 30 AHB
 add wave -noupdate /tb_ahb_usb/DUT/ahb/clk
 add wave -noupdate /tb_ahb_usb/DUT/ahb/n_rst
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsel
@@ -114,9 +116,10 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/state
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_state
 add wave -noupdate /tb_ahb_usb/DUT/ahb/buffer
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_buffer
-add wave -noupdate -divider {Data Buffer}
+add wave -noupdate -divider -height 30 {Data Buffer}
 add wave -noupdate /tb_ahb_usb/DUT/DB/clk
 add wave -noupdate /tb_ahb_usb/DUT/DB/n_rst
+add wave -noupdate -divider {Data Buffer input}
 add wave -noupdate /tb_ahb_usb/DUT/DB/store_tx_data
 add wave -noupdate /tb_ahb_usb/DUT/DB/get_tx_packet_data
 add wave -noupdate /tb_ahb_usb/DUT/DB/clear
@@ -125,6 +128,7 @@ add wave -noupdate /tb_ahb_usb/DUT/DB/store_rx_packet_data
 add wave -noupdate /tb_ahb_usb/DUT/DB/get_rx_data
 add wave -noupdate /tb_ahb_usb/DUT/DB/tx_data
 add wave -noupdate /tb_ahb_usb/DUT/DB/rx_packet_data
+add wave -noupdate -divider {Data Buffer output}
 add wave -noupdate /tb_ahb_usb/DUT/DB/tx_packet_data
 add wave -noupdate /tb_ahb_usb/DUT/DB/rx_data
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/buffer_occupancy
@@ -133,7 +137,7 @@ add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/read_ptr
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/write_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/queue
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {11418721 ps} 0}
+WaveRestoreCursors {{Cursor 1} {8967400 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -149,4 +153,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {7504959 ps}
+WaveRestoreZoom {18031408 ps} {33377294 ps}

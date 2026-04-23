@@ -251,7 +251,7 @@ module tb_ahb_usb ();
 
         @(negedge clk);
         while (!hready) @(negedge clk);
-        hwdata = 32'hC3;    //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0)
+        hwdata = 32'hC3; //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0)
         htrans = 2'b0;
         hsel = 0;
 
