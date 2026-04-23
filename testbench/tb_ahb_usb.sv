@@ -110,34 +110,34 @@ module tb_ahb_usb ();
         repeat(9) @(negedge clk);
     end
     endtask
-    task automatic ahb_burst(input logic iswrite,input logic [3:0] start_addr, input logic [2:0] burst_mode, input logic [31:0] wdata [4],output logic [31:0] rdata [4]);
-   begin  
-       integer i;
-       logic [3:0] current_addr;
-       current_addr=start_addr;
+    task automatic ahb_burstincr4(input logic iswrite,input logic [3:0] start_addr, input logic [2:0] burst_mode, input logic [31:0] wdata [4],output logic [31:0] rdata [4]);
+    begin  
+        integer i;
+        logic [3:0] current_addr;
+        current_addr=start_addr;
        
-       @(negedge clk);
-       hsel=1; hwrite=iswrite; hsize='0; hburst=burst_mode; htrans=2'b10; haddr=current_addr;
+        @(negedge clk);
+        hsel=1; hwrite=iswrite; hsize='0; hburst=burst_mode; htrans=2'b10; haddr=current_addr;
        
-       for(i=0;i<4;i++) begin
-           @(negedge clk);
-           while(!hready) @(negedge clk);
+        for(i=0;i<4;i++) begin
+            @(negedge clk);
+            while(!hready) @(negedge clk);
            
-           if(iswrite) begin
+            if(iswrite) begin
                 
                hwdata=wdata[i];
-           end else begin
+            end else begin
                rdata[i]=hrdata; // Perfectly timed normal read!
-           end
+            end
            
-           if(i < 3) begin
+            if(i < 3) begin
                htrans=2'b11;
                current_addr=current_addr+1;
                haddr=current_addr;
-           end else begin
+            end else begin
                htrans='0;
                hsel=0;
-           end
+            end
        end
        @(negedge clk);
        while(!hready) @(negedge clk);
@@ -145,7 +145,18 @@ module tb_ahb_usb ();
        
    end
    endtask
-
+   task automatic ahb_burstwrap8(input logic [3:0] start_addr, output logic [31:0] rdata [8]);
+   begin
+        integer i;
+        logic [3:0] current_addr;
+        current_addr=start_addr;
+        @(negedge clk);
+        hsel=1;
+        hwrite=0;
+        hsize=3'b001;
+        hburst=3'b100;
+        htrans=3'b10;
+        haddr=current_addr;
 
 
 
@@ -181,13 +192,13 @@ module tb_ahb_usb ();
         mtx_data[6]=32'h00770000;
         mtx_data[7]=32'h88000000;*/
         $display("First INCR4 write");
-        ahb_burst(1'b1,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
+        ahb_burstincr4(1'b1,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
         /*$display("Second INCR4 write");
         ahb_burst(1'b1,4'h0,3'b011,mtx_data[4:7],mrx_data[4:7]);
         send_DATA(dp_in,dm_in);*/
       
         $display("First INCR4 read");
-        ahb_burst(1'b0,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
+        ahb_burstincr4(1'b0,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
         @(negedge clk);
         /*$display("Second INCR4 read");
         ahb_burst(1'b0,4'h0,3'b011,mtx_data[4:7],mrx_data[4:7]);*/
