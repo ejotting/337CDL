@@ -78,7 +78,8 @@ module tb_ahb_usb ();
         dp_in = 1;
         repeat(9) @(negedge clk);
     end
-
+    endtask
+    
     task automatic send_ERROR(ref logic dp_in, ref logic dm_in);
     begin
         send_byte(8'b10000000,dp_in,dm_in);
