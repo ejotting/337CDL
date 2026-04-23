@@ -105,8 +105,6 @@ module tb_tx_fsm ();
         initialize;
         reset_dut;
 
-        //TODO need to fix the testbench. finalize rtl first.
-
         $display("ERROR path");
         //IDLE
         tx_packet = 3'd1;
@@ -156,6 +154,8 @@ module tb_tx_fsm ();
         data_strobe;
         //EOP
         data_strobe;
+
+        repeat (20) data_strobe;
 
         $finish;
     end
