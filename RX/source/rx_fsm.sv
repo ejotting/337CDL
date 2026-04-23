@@ -79,8 +79,8 @@ always_comb begin
         next_state = SYNC;
         if(count_out == 5'd8) begin
             clear = 1;
-            if(shift_reg_val[15:8] == 8'b11100001) begin next_state = TOKEN; next_packet_type = 3'd1; end
-            else if(shift_reg_val[15:8] == 8'b01101001) begin next_state = TOKEN; next_packet_type = 3'd2; end
+            if(shift_reg_val[15:8] == 8'b11100001) begin next_state = TOKEN; next_packet_type = 3'd2; end
+            else if(shift_reg_val[15:8] == 8'b01101001) begin next_state = TOKEN; next_packet_type = 3'd1; end
             else if(shift_reg_val[15:8] == 8'b11010010) begin next_state = ACK; next_packet_type = 3'd3; end
             else if(shift_reg_val[15:8] == 8'b11000011) begin next_state = DATA1; next_packet_type = 3'd4; end
             else if(shift_reg_val[15:8] == 8'b01001011) begin next_state = DATA1; next_packet_type = 3'd5; end
