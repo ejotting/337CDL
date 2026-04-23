@@ -218,9 +218,7 @@ module tb_ahb_usb ();
         dm_in = 0;
         reset_dut;
 
-        @(negedge clk);
-
-        
+        @(negedge clk);        
         mtx_data[0]=32'h00000011;
         mtx_data[1]=32'h00002200;
         mtx_data[2]=32'h00330000;
@@ -270,7 +268,60 @@ module tb_ahb_usb ();
         send_ACK(dp_in,dm_in);*/
         
 //testing TX here 
-        //normal test case
+        //send ACK packet
+        @(negedge clk);
+        hsel = 1;
+        hwrite = 1;
+        hburst = 3'b0; 
+        hsize = 3'b0;
+        htrans = 2'b10;   
+        haddr = 4'hC;
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'hD2;   //D2 means tx_packet =011 (ACK packet)
+        htrans = 2'b0;
+        hsel = 0;
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        repeat(300) @(negedge clk);
+
+        //send DATA0 packet to induce bit stuffing while sending
+        @(negedge clk);
+        hsel = 1;
+        hwrite = 1;
+        hburst = 3'b0; //single
+        hsize = 3'b0;
+        htrans = 2'b10;
+        haddr = 4'h0;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'h3F; //sending 7 ones in a row because the last data payload has a 1 too
+        htrans = 2'b0;
+        hsel = 0;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+
+        //sending DATA0 using TX
+        @(negedge clk);
+        hsel = 1;
+        hwrite = 1;
+        hburst = 3'b000;
+        hsize = 3'b000;
+        htrans = 2'b10;
+        haddr = 4'hC;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'hC3; //DATA0
+        htrans = 2'b00;
+        hsel = 0;
+
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+
+        //normal test case of sending DATA0
         @(negedge clk);
         hsel = 1;
         hwrite = 1;
@@ -281,12 +332,12 @@ module tb_ahb_usb ();
         @(negedge clk); //set everything up for hburst INCR4 to transmit with tx
 
         while (!hready) @(negedge clk); //continue clk until done with transfers
-        hwdata = 32'h11; 
+        hwdata = 32'hFFFF; 
         htrans = 2'b11; 
         haddr = 4'd1;
         @(negedge clk);
         while (!hready) @(negedge clk);
-        hwdata = 32'h22;  
+        hwdata = 32'hFFFF;  
         htrans = 2'b11; 
         haddr = 4'd2;
         @(negedge clk);
@@ -313,7 +364,7 @@ module tb_ahb_usb ();
         hwdata = 32'hC3; //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0)
         htrans = 2'b0;
         hsel = 0;
-        repeat(1400) @(negedge clk);
+        repeat(1900) @(negedge clk);
 
         //induce tx error
         @(negedge clk);
@@ -328,22 +379,7 @@ module tb_ahb_usb ();
         repeat(30) @(negedge clk);
 
         //returns to idle mode and continues normal operation
-        //send ACK packet
-        @(negedge clk);
-        hsel = 1;
-        hwrite = 1;
-        hburst = 3'b0; 
-        hsize = 3'b0;
-        htrans = 2'b10;   
-        haddr = 4'hC;
-        @(negedge clk);
-        while (!hready) @(negedge clk);
-        hwdata = 32'hD2;   //D2 means tx_packet =011 (ACK packet)
-        htrans = 2'b0;
-        hsel = 0;
-        @(negedge clk);
-        while (!hready) @(negedge clk);
-        repeat(300) @(negedge clk);
+        
 
         $finish;
     end
