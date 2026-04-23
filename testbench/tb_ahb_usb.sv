@@ -328,8 +328,23 @@ module tb_ahb_usb ();
         repeat(30) @(negedge clk);
 
         //returns to idle mode and continues normal operation
-        haddr = 4'h0;
-        repeat (100) @(negedge clk);
+        //send ACK packet
+        @(negedge clk);
+        hsel = 1;
+        hwrite = 1;
+        hburst = 3'b0; 
+        hsize = 3'b0;
+        htrans = 2'b10;   
+        haddr = 4'hC;
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        hwdata = 32'hD2;   //D2 means tx_packet =011 (ACK packet)
+        htrans = 2'b0;
+        hsel = 0;
+        @(negedge clk);
+        while (!hready) @(negedge clk);
+        repeat(300) @(negedge clk);
+
         $finish;
     end
 endmodule
