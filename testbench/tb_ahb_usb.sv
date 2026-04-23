@@ -351,17 +351,13 @@ module tb_ahb_usb ();
         hsize = 3'b0;
         htrans = 2'b10;
         haddr = 4'h0;
-
         @(negedge clk);
         while (!hready) @(negedge clk);
         hwdata = 32'h3F; //sending 7 ones in a row because the last data payload has a 1 too
         htrans = 2'b0;
         hsel = 0;
-
         @(negedge clk);
-        while (!hready) @(negedge clk);
-
-        //sending DATA0 using TX
+        while (!hready) @(negedge clk);//sending DATA0 using TX
         @(negedge clk);
         hsel = 1;
         hwrite = 1;
@@ -369,13 +365,11 @@ module tb_ahb_usb ();
         hsize = 3'b000;
         htrans = 2'b10;
         haddr = 4'hC;
-
         @(negedge clk);
         while (!hready) @(negedge clk);
         hwdata = 32'hC3; //DATA0
         htrans = 2'b00;
         hsel = 0;
-
         @(negedge clk);
         while (!hready) @(negedge clk);
 
@@ -388,7 +382,6 @@ module tb_ahb_usb ();
         htrans = 2'b10;
         haddr = 4'd0;
         @(negedge clk); //set everything up for hburst INCR4 to transmit with tx
-
         while (!hready) @(negedge clk); //continue clk until done with transfers
         hwdata = 32'hFFFF; 
         htrans = 2'b11; 
@@ -416,7 +409,6 @@ module tb_ahb_usb ();
         hburst = 3'b0;  
         htrans = 2'b10;    
         haddr = 4'hC; //write to C address. this is the only time it enables the TX to output.
-
         @(negedge clk);
         while (!hready) @(negedge clk);
         hwdata = 32'hC3; //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0)
@@ -436,7 +428,7 @@ module tb_ahb_usb ();
         hwdata = 32'h4B; //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0) but data buffer should be empty rn.
         repeat(30) @(negedge clk);
 
-        //returns to idle mode and continues normal operation
+        //returns to idle mode/continues normal operation
         
 
         $finish;
