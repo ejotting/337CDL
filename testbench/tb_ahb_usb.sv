@@ -269,42 +269,38 @@ module tb_ahb_usb ();
         send_DATA(dp_in,dm_in);
         send_ACK(dp_in,dm_in);*/
         
-//testing TX here
-       /* @(negedge clk);
+//testing TX here 
+        //normal test case
+        @(negedge clk);
         hsel = 1;
         hwrite = 1;
-        hburst = 3'b11; 
-        hsize = 3'b010;
+        hburst = 3'b11; //INCR4 idk 
+        hsize = 3'b010; //size 4
         htrans = 2'b10;
-        haddr = 4'h0;
-        
-        @(negedge clk);
+        haddr = 4'd0;
+        @(negedge clk); //set everything up for hburst INCR4 to transmit with tx
+
         while (!hready) @(negedge clk); //continue clk until done with transfers
         hwdata = 32'h11; 
         htrans = 2'b11; 
         haddr = 4'd1;
-
         @(negedge clk);
         while (!hready) @(negedge clk);
         hwdata = 32'h22;  
         htrans = 2'b11; 
         haddr = 4'd2;
-
         @(negedge clk);
         while (!hready) @(negedge clk);
         hwdata = 32'h33;  
         htrans = 2'b11; 
         haddr = 4'd3;
-
         @(negedge clk);
         while (!hready) @(negedge clk);
         hwdata = 32'h44; 
         htrans = 2'b0; 
         hsel = 0;
-
         @(negedge clk);
         while (!hready) @(negedge clk);
-
         repeat(3) @(negedge clk);
         hsel = 1;
         hwrite = 1;
@@ -317,9 +313,23 @@ module tb_ahb_usb ();
         hwdata = 32'hC3; //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0)
         htrans = 2'b0;
         hsel = 0;
+        repeat(1400) @(negedge clk);
 
-        repeat(2000) @(negedge clk);
-*/
+        //induce tx error
+        @(negedge clk);
+        hsel = 1;
+        hwrite = 1;
+        hburst = 3'b0; 
+        hsize = 3'b0;
+        htrans = 2'b10; //nonseq
+        haddr = 4'hC;
+        @(negedge clk);
+        hwdata = 32'h4B; //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0) but data buffer should be empty rn.
+        repeat(30) @(negedge clk);
+
+        //returns to idle mode and continues normal operation
+        haddr = 4'h0;
+        repeat (100) @(negedge clk);
         $finish;
     end
 endmodule
