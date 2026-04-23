@@ -97,14 +97,15 @@ module tb_ahb_usb ();
     task automatic send_DATA(ref logic dp_in, ref logic dm_in);
     begin
         send_byte(8'b10000000,dp_in,dm_in);
-        send_byte(8'b11000011,dp_in,dm_in);
+        send_byte(8'b01001011,dp_in,dm_in);
         
-        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b01111110,dp_in,dm_in);
+        repeat(8) @(negedge clk);
         send_byte(8'b00010000,dp_in,dm_in);
         send_byte(8'b01100110,dp_in,dm_in);
 
-        send_byte(8'b01010011,dp_in,dm_in);
-        send_byte(8'b11000111,dp_in,dm_in);
+        send_byte(8'b10100100,dp_in,dm_in);
+        send_byte(8'b01000110,dp_in,dm_in);
         dp_in = 0;
         dm_in = 0;
         repeat(16) @(negedge clk);
