@@ -65,15 +65,15 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/clk
 add wave -noupdate /tb_ahb_usb/DUT/ahb/n_rst
 add wave -noupdate -divider {AHB inputs (top)}
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsel
-add wave -noupdate /tb_ahb_usb/DUT/ahb/htrans
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsize
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hwrite
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hwdata
-add wave -noupdate /tb_ahb_usb/DUT/ahb/hburst
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/ahb/htrans
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/ahb/hburst
 add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr
 add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr_reg
 add wave -noupdate -divider {AHB outputs (top)}
-add wave -noupdate /tb_ahb_usb/DUT/ahb/hrdata
+add wave -noupdate -color Cyan /tb_ahb_usb/DUT/ahb/hrdata
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hresp
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hready
 add wave -noupdate -divider {AHB inputs}
@@ -84,30 +84,31 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/RX_transferactive
 add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_transferactive
 add wave -noupdate /tb_ahb_usb/DUT/ahb/RX_packet
 add wave -noupdate /tb_ahb_usb/DUT/ahb/RX_data
-add wave -noupdate /tb_ahb_usb/DUT/ahb/bufferoccupancy
+add wave -noupdate -color Coral /tb_ahb_usb/DUT/ahb/bufferoccupancy
 add wave -noupdate -divider {AHB outputs}
-add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_packet
-add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_data
-add wave -noupdate /tb_ahb_usb/DUT/ahb/clear
+add wave -noupdate /tb_ahb_usb/testnames
+add wave -noupdate -color Gold /tb_ahb_usb/DUT/ahb/clear
+add wave -noupdate -color Gold /tb_ahb_usb/DUT/ahb/beat_cnt
+add wave -noupdate -color Gold /tb_ahb_usb/DUT/ahb/error_state
+add wave -noupdate -color Gold /tb_ahb_usb/DUT/ahb/error_state2
+add wave -noupdate /tb_ahb_usb/DUT/ahb/state
 add wave -noupdate /tb_ahb_usb/DUT/ahb/get_rx_data
+add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_packet
 add wave -noupdate /tb_ahb_usb/DUT/ahb/store_tx_data
+add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_data
 add wave -noupdate /tb_ahb_usb/DUT/ahb/D_mode
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsel_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/htrans_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsize_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hburst_reg
-add wave -noupdate /tb_ahb_usb/testnames
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hwrite_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/rx_packet_flag
-add wave -noupdate /tb_ahb_usb/DUT/ahb/error_state
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_error_state
-add wave -noupdate /tb_ahb_usb/DUT/ahb/error_state2
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_error_state2
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_clear
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_tx_packet
 add wave -noupdate /tb_ahb_usb/DUT/ahb/tx_active_prev
 add wave -noupdate /tb_ahb_usb/DUT/ahb/tx_done
-add wave -noupdate /tb_ahb_usb/DUT/ahb/beat_cnt
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_beat_cnt
 add wave -noupdate /tb_ahb_usb/DUT/ahb/burst_base_addr
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_burst_base_addr
@@ -121,7 +122,6 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/prev_end_addr
 add wave -noupdate /tb_ahb_usb/DUT/ahb/current_end_addr
 add wave -noupdate /tb_ahb_usb/DUT/ahb/raw_hazard
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hazard_stall
-add wave -noupdate /tb_ahb_usb/DUT/ahb/state
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_state
 add wave -noupdate /tb_ahb_usb/DUT/ahb/buffer
 add wave -noupdate /tb_ahb_usb/DUT/ahb/next_buffer
@@ -145,7 +145,11 @@ add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/read_ptr
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/write_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/queue
 TreeUpdate [SetDefaultTree]
+<<<<<<< HEAD
 WaveRestoreCursors {{Cursor 1} {9768720 ps} 0}
+=======
+WaveRestoreCursors {{Cursor 1} {32140975 ps} 0}
+>>>>>>> 03ece060e311746d7d03f08b3185547a0af956a8
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -161,4 +165,8 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
+<<<<<<< HEAD
 WaveRestoreZoom {9768720 ps} {13839020 ps}
+=======
+WaveRestoreZoom {31869991 ps} {32793005 ps}
+>>>>>>> 03ece060e311746d7d03f08b3185547a0af956a8
