@@ -283,7 +283,7 @@ module tb_ahb_usb ();
 
         //Illegal bit stuff
         send_byte(8'b10000000,dp_in,dm_in);
-        send_byte(8'b01001011,dp_in,dm_in);
+        send_byte(8'b11000011,dp_in,dm_in);
         
         send_byte(8'b01111111,dp_in,dm_in);
         send_byte(8'b00010000,dp_in,dm_in);
