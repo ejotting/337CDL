@@ -248,6 +248,51 @@ module tb_ahb_usb ();
         dm_in = 0;
         reset_dut;
 
+        //Incorrect CRC
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11100001,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+        send_byte(8'b01010000,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+
+        //Wrong address/endpoint
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b11100001,dp_in,dm_in);
+        send_byte(8'b01101110,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+
+        //Illegal bit stuff
+        send_byte(8'b10000000,dp_in,dm_in);
+        send_byte(8'b01001011,dp_in,dm_in);
+        
+        send_byte(8'b01111111,dp_in,dm_in);
+        send_byte(8'b00010000,dp_in,dm_in);
+        send_byte(8'b01100110,dp_in,dm_in);
+
+        send_byte(8'b01010011,dp_in,dm_in);
+        send_byte(8'b11000111,dp_in,dm_in);
+        dp_in = 0;
+        dm_in = 0;
+        repeat(16) @(negedge clk);
+        dp_in = 1;
+        repeat(9) @(negedge clk);
+
+        send_ACK(dp_in,dm_in);
+        send_IN(dp_in,dm_in);
+        send_OUT(dp_in,dm_in);
+
+        send_DATA(dp_in,dm_in);
+
+        //AHB
         @(negedge clk);        
         mtx_data[0]=32'h00000011;
         mtx_data[1]=32'h00002200;
