@@ -145,15 +145,11 @@ add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/read_ptr
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/write_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/queue
 TreeUpdate [SetDefaultTree]
-<<<<<<< HEAD
+
 WaveRestoreCursors {{Cursor 1} {32525000 ps} 0}
-=======
-<<<<<<< HEAD
-WaveRestoreCursors {{Cursor 1} {9768720 ps} 0}
-=======
+
 WaveRestoreCursors {{Cursor 1} {32140975 ps} 0}
->>>>>>> 03ece060e311746d7d03f08b3185547a0af956a8
->>>>>>> 488ec9f9cecab9133c6a928a1d59cf93e2fd2e86
+
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -169,12 +165,8 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-<<<<<<< HEAD
+
 WaveRestoreZoom {35713008 ps} {38352932 ps}
-=======
-<<<<<<< HEAD
-WaveRestoreZoom {9768720 ps} {13839020 ps}
-=======
+
 WaveRestoreZoom {31869991 ps} {32793005 ps}
->>>>>>> 03ece060e311746d7d03f08b3185547a0af956a8
->>>>>>> 488ec9f9cecab9133c6a928a1d59cf93e2fd2e86
+

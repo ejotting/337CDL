@@ -184,7 +184,7 @@ module ahb_subordinate_usb #(
        TX_data='0;
        next_state = state;
        next_buffer = buffer;
-       
+       //RAW HAZARD
        prev_end_addr=haddr_reg+((2**hsize_reg)-1);
        current_end_addr=haddr+((2**hsize)-1);
        raw_hazard=hsel_reg&&hwrite_reg&&hsel&&!hwrite&&(haddr<=prev_end_addr) &&(haddr_reg<=current_end_addr)&&(htrans_reg==NONSEQ||htrans_reg==SEQ) &&(!hazard_stall);

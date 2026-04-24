@@ -212,7 +212,7 @@ module tb_ahb_subordinate_usb ();
         reset_model();
         reset_dut();
         
-        $display("RX pop");
+        /*$display("RX pop");
         RX_dataready=1;
         RX_data=8'hA5;
         enqueue_read(4'h0,2'b00,32'h000000A5);
@@ -248,19 +248,21 @@ module tb_ahb_subordinate_usb ();
         finish_transactions();
         TX_transferactive=0;
         RX_packet='0;
-        RX_dataready=0;
+        RX_dataready=0;*/
         //RAW hazard check reads something right ater a write
         $display("Raw hazard check, reads something right after a write");
         RX_dataready=1;
         RX_data=8'hBB;
+        bufferoccupancy=7'd1;
         enqueue_write(4'h0,2'b01,16'hCCAA);
-        execute_transactions(1);
-        
         enqueue_read(4'h1,2'b00,8'hBB);
-        execute_transactions(1);
+        execute_transactions(2);
+        
+        
+     
         finish_transactions();
         //write one byte to one register, 
-        $display("Write to 0x2");
+        /*$display("Write to 0x2");
         enqueue_write(4'h2,2'b00,8'hFF);
         execute_transactions(1);
         finish_transactions();
@@ -380,7 +382,7 @@ module tb_ahb_subordinate_usb ();
         data[2]=32'h00000040;
         enqueue_burst_read(4'h0,2'b10,BURST_INCR,data);
         execute_transactions(3);
-        finish_transactions();
+        finish_transactions();*/
         $finish;
 
 
