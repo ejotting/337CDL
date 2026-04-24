@@ -18,6 +18,7 @@ module tb_ahb_usb ();
     logic [31:0]hwdata;
     logic [31:0] hrdata;
     logic hready, hresp;
+    string testnames;
     // clockgen
     always begin
         clk = 0;
@@ -295,6 +296,7 @@ module tb_ahb_usb ();
         send_DATA(dp_in,dm_in);
         
         //AHB
+        testnames="WRAP8 Read Start 0xE";
         ahb_burstwrap8(4'hE, mrx_data_wrap);
         $display("wrap results");
         $display("Beat 0, add 0xE %h ",mrx_data_wrap[0]);
@@ -305,6 +307,7 @@ module tb_ahb_usb ();
         $display("Beat 5, add 0x8 %h ",mrx_data_wrap[5]);
         $display("Beat 6, add 0xA %h ",mrx_data_wrap[6]);
         $display("Beat 7, add 0xC %h ",mrx_data_wrap[7]);
+        testnames="AHB FLUSH";
         $display("Starting flush");
         hsel=1;
         haddr=4'hD;
@@ -326,7 +329,7 @@ module tb_ahb_usb ();
         htrans=2'b00;
         
        
-        
+        testnames="Write to Read only";
         $display("Write to read only");
         @(negedge clk);
         @(negedge clk);
@@ -346,12 +349,13 @@ module tb_ahb_usb ();
         mtx_data[5]=32'h00006600;
         mtx_data[6]=32'h00770000;
         mtx_data[7]=32'h88000000;*/
+        testnames="INCR4 Write";
         $display("First INCR4 write");
         ahb_burstincr4(1'b1,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
         /*$display("Second INCR4 write");
         ahb_burst(1'b1,4'h0,3'b011,mtx_data[4:7],mrx_data[4:7]);
         send_DATA(dp_in,dm_in);*/
-      
+        testnames="INCR4 Read";
         $display("First INCR4 read");
         ahb_burstincr4(1'b0,4'h0,3'b011,mtx_data[0:3],mrx_data[0:3]);
         @(negedge clk);
@@ -370,6 +374,7 @@ module tb_ahb_usb ();
 
         
         send_DATA(dp_in,dm_in);
+        testnames="Variable INCR (3) at 0x4";
         $display("variable INCR3 starting at 0x4");
         ahb_burst_variable_incr(4'h4,3,incr3);
         $display("variable incr3 results");
@@ -377,6 +382,7 @@ module tb_ahb_usb ();
         $display("Beat 1, add 0x8 %h ",incr3[1]);
         $display("Beat 2, add 0xC %h ",incr3[2]);
         $display("Variable incr5, expected two case error state");
+        testnames="Variable INCR (5) at 0x0, overflow";
         ahb_burst_variable_incr(4'h0,5,incr5);
 
         /*

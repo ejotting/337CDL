@@ -86,6 +86,7 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/htrans_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsize_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hburst_reg
+add wave -noupdate /tb_ahb_usb/testnames
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hwrite_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/rx_packet_flag
 add wave -noupdate /tb_ahb_usb/DUT/ahb/error_state
@@ -134,7 +135,7 @@ add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/read_ptr
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/write_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/queue
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {19271159 ps} 0}
+WaveRestoreCursors {{Cursor 1} {25022515 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -150,4 +151,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {12705425 ps} {22869766 ps}
+WaveRestoreZoom {24493339 ps} {25578150 ps}
