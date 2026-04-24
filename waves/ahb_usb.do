@@ -39,33 +39,39 @@ add wave -noupdate -divider {TX output}
 add wave -noupdate /tb_ahb_usb/DUT/TX/get_tx_packet_data
 add wave -noupdate /tb_ahb_usb/DUT/TX/tx_error
 add wave -noupdate /tb_ahb_usb/DUT/TX/tx_transfer_active
+add wave -noupdate /tb_ahb_usb/DUT/TX/enable_crc
+add wave -noupdate /tb_ahb_usb/DUT/TX/data_done
+add wave -noupdate /tb_ahb_usb/DUT/TX/next_end_of_packet
+add wave -noupdate /tb_ahb_usb/DUT/TX/end_of_packet
+add wave -noupdate /tb_ahb_usb/DUT/TX/myPTS/parallel_in
+add wave -noupdate /tb_ahb_usb/DUT/TX/load_enable
 add wave -noupdate -radix binary /tb_ahb_usb/DUT/TX/data_out
+add wave -noupdate /tb_ahb_usb/DUT/TX/crc_out
+add wave -noupdate /tb_ahb_usb/DUT/TX/myFSM/state
 add wave -noupdate -color {Light Blue} /tb_ahb_usb/DUT/TX/myPTS/serial_out
 add wave -noupdate -color Cyan /tb_ahb_usb/DUT/TX/dp_out
 add wave -noupdate -color Cyan /tb_ahb_usb/DUT/TX/dm_out
-add wave -noupdate /tb_ahb_usb/DUT/TX/enable_crc
-add wave -noupdate /tb_ahb_usb/DUT/TX/crc_out
-add wave -noupdate /tb_ahb_usb/DUT/TX/myFSM/state
-add wave -noupdate /tb_ahb_usb/DUT/TX/data_done
-add wave -noupdate /tb_ahb_usb/DUT/TX/load_enable
-add wave -noupdate /tb_ahb_usb/DUT/TX/next_end_of_packet
-add wave -noupdate /tb_ahb_usb/DUT/TX/end_of_packet
 add wave -noupdate -divider {TX bit stuffing}
 add wave -noupdate /tb_ahb_usb/DUT/TX/pts_serial_out
-add wave -noupdate -color Coral /tb_ahb_usb/DUT/TX/bs_shift_enable
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/TX/bs_shift_enable
 add wave -noupdate /tb_ahb_usb/DUT/TX/bs_serial_out
 add wave -noupdate -divider -height 30 AHB
 add wave -noupdate /tb_ahb_usb/DUT/ahb/clk
 add wave -noupdate /tb_ahb_usb/DUT/ahb/n_rst
+add wave -noupdate -divider {AHB inputs (top)}
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsel
 add wave -noupdate /tb_ahb_usb/DUT/ahb/htrans
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsize
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hwrite
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hwdata
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hburst
+add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr
+add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr_reg
+add wave -noupdate -divider {AHB outputs (top)}
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hrdata
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hresp
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hready
+add wave -noupdate -divider {AHB inputs}
 add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_error
 add wave -noupdate /tb_ahb_usb/DUT/ahb/RX_error
 add wave -noupdate /tb_ahb_usb/DUT/ahb/RX_dataready
@@ -74,6 +80,7 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_transferactive
 add wave -noupdate /tb_ahb_usb/DUT/ahb/RX_packet
 add wave -noupdate /tb_ahb_usb/DUT/ahb/RX_data
 add wave -noupdate /tb_ahb_usb/DUT/ahb/bufferoccupancy
+add wave -noupdate -divider {AHB outputs}
 add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_packet
 add wave -noupdate /tb_ahb_usb/DUT/ahb/TX_data
 add wave -noupdate /tb_ahb_usb/DUT/ahb/clear
@@ -81,8 +88,6 @@ add wave -noupdate /tb_ahb_usb/DUT/ahb/get_rx_data
 add wave -noupdate /tb_ahb_usb/DUT/ahb/store_tx_data
 add wave -noupdate /tb_ahb_usb/DUT/ahb/D_mode
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsel_reg
-add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr
-add wave -noupdate /tb_ahb_usb/DUT/ahb/haddr_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/htrans_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hsize_reg
 add wave -noupdate /tb_ahb_usb/DUT/ahb/hburst_reg
@@ -134,7 +139,7 @@ add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/read_ptr
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/write_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/queue
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {28515000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {11681785 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
