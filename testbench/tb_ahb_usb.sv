@@ -10,6 +10,21 @@ module tb_ahb_usb ();
         $dumpvars;
     end
 
+    //testcase names
+    string testname;
+    string testcase1 = "RX Error";
+    string testcase2 = "ACK";
+    string testcase3 = "IN";
+    string testcase4 = "OUT";
+    string testcase5 = "DATA";
+    string testcase6 = "AHB Operations";
+    string testcase7 = "DATA0";
+    string testcase8 = "DATA1";
+    string testcase9 = "ACK";
+    string testcase10 = "NACK";
+    string testcase11 = "STALL";
+    string testcase12 = "TX Error";
+
     logic clk, n_rst, dp_in, dm_in, hsel, hwrite;
     logic [3:0]haddr;
     logic [1:0]htrans;
@@ -32,6 +47,7 @@ module tb_ahb_usb ();
         @(posedge clk);
         @(posedge clk);
         @(negedge clk);
+        #1; 
         n_rst = 1;
         @(posedge clk);
         @(posedge clk);
@@ -236,6 +252,7 @@ module tb_ahb_usb ();
     logic [31:0] incr5[];
     integer i;
     initial begin
+
         n_rst = 1;
         hsel = 0;
         haddr = 0;
@@ -248,6 +265,7 @@ module tb_ahb_usb ();
         dm_in = 0;
         reset_dut;
 
+        testname = testcase1;
         //Incorrect CRC
         send_byte(8'b10000000,dp_in,dm_in);
         send_byte(8'b11100001,dp_in,dm_in);
@@ -286,12 +304,19 @@ module tb_ahb_usb ();
         dp_in = 1;
         repeat(9) @(negedge clk);
 
+        testname = testcase2;
         send_ACK(dp_in,dm_in);
+
+        testname = testcase3;
         send_IN(dp_in,dm_in);
+
+        testname = testcase4;
         send_OUT(dp_in,dm_in);
 
+        testname = testcase5;
         send_DATA(dp_in,dm_in);
 
+        testname = testcase6;
         //AHB
         @(negedge clk);        
         mtx_data[0]=32'h00000011;
@@ -371,7 +396,7 @@ module tb_ahb_usb ();
         send_ACK(dp_in,dm_in);*/
         
 //TODO TESTING TX HERE
-
+        testname = testcase7;
         //send DATA0 packet to induce bit stuffing while sending
         $display("TX BIT STUFFING DATA0");
         @(negedge clk);
@@ -402,8 +427,10 @@ module tb_ahb_usb ();
         hsel = 0;
         @(negedge clk);
         while (!hready) @(negedge clk);
+        repeat(1000) @(negedge clk);
 
         
+        testname = testcase8;
         $display("TX DATA1");
         //normal test case of sending DATA0
         @(negedge clk);
@@ -414,7 +441,6 @@ module tb_ahb_usb ();
         htrans = 2'b10;
         haddr = 4'd0;
         @(negedge clk); //set everything up for hburst INCR4 to transmit with tx
-
         while (!hready) @(negedge clk); //continue clk until done with transfers
         hwdata = 32'h11; 
         htrans = 2'b11; 
@@ -442,7 +468,6 @@ module tb_ahb_usb ();
         hburst = 3'b0;  
         htrans = 2'b10;    
         haddr = 4'hC; //write to C address. this is the only time it enables the TX to output.
-
         @(negedge clk);
         while (!hready) @(negedge clk);
         hwdata = 32'h4B; //hwdata[7:0]= C3 and tx_packet = 1 (so DATA0)
@@ -450,6 +475,7 @@ module tb_ahb_usb ();
         hsel = 0;
         repeat(1400) @(negedge clk);
 
+        testname = testcase9;
         //send ACK packet
         @(negedge clk);
         hsel = 1;
@@ -467,6 +493,7 @@ module tb_ahb_usb ();
         while (!hready) @(negedge clk);
         repeat(300) @(negedge clk);
 
+        testname = testcase10;
         //send NAK packet
         @(negedge clk);
         hsel = 1;
@@ -484,6 +511,7 @@ module tb_ahb_usb ();
         while (!hready) @(negedge clk);
         repeat(300) @(negedge clk);
 
+        testname = testcase11;
         //send STALL packet
         @(negedge clk);
         hsel = 1;
@@ -501,6 +529,7 @@ module tb_ahb_usb ();
         while (!hready) @(negedge clk);
         repeat(300) @(negedge clk);
 
+        testname = testcase12;
         //induce tx error
         @(negedge clk);
         hsel = 1;

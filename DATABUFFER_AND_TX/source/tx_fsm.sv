@@ -7,12 +7,12 @@ module tx_fsm(
     input logic strobe, data_done,
     input logic [15:0] crc_out,
     input logic [7:0] tx_packet_data,
-    input logic shift_enable, //todo
+    input logic shift_enable, 
     output logic get_tx_packet_data, tx_transfer_active, tx_error, end_of_packet, load_enable, enable_crc,
     //output logic count_enable,
     output logic [7:0] data_out
 );
-    typedef enum logic [4:0]{
+    typedef enum logic [3:0]{
         IDLE, LOAD_SYNC, SYNC, LOAD_PID, PID, GET_DATA, LOAD_DATA, SEND_DATA,
         LOAD_CRC1, CRC1, LOAD_CRC2, CRC2, LOAD_EOP, EOP, ERROR
     }state_t;
@@ -90,7 +90,7 @@ module tx_fsm(
             ERROR: begin
                 next_state = IDLE;
             end
-            
+            default: next_state = IDLE;
         endcase
         end
     end
@@ -257,6 +257,15 @@ module tx_fsm(
                 end_of_packet = 0;
                 load_enable = 0;
             end
+            default: begin
+                get_tx_packet_data = 0;
+                data_out = '1;
+                tx_transfer_active = 0;
+                tx_error = 0;
+                enable_crc = 0;
+                end_of_packet = 0;
+                load_enable = 0;
+            end 
         endcase
     end
 endmodule

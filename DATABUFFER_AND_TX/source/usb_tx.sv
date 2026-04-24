@@ -34,6 +34,7 @@ module usb_tx(
         .enable_crc(enable_crc),
         .data_out(data_out)
     );
+  
 
     //serial data that is taken bit-by-bit from the parallel data_out
     //logic serial_data;
@@ -42,7 +43,7 @@ module usb_tx(
         .clk(clk),
         .n_rst(n_rst),
         .data_in(pts_serial_out),
-        .enable_crc(enable_crc && bs_shift_enable),  //todobit stuffing enable
+        .enable_crc(enable_crc && bs_shift_enable),  
         .strobe(strobe),
         .crc_out(crc_out)
     );
@@ -51,7 +52,7 @@ module usb_tx(
     pts_8bit myPTS(
         .clk(clk),
         .n_rst(n_rst),
-        .shift_enable(strobe && bs_shift_enable),  //todobit stuffing enable
+        .shift_enable(strobe && bs_shift_enable), 
         .load_enable(load_enable), 
         .parallel_in(data_out),
         .serial_out(pts_serial_out)
