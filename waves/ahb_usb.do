@@ -1,32 +1,36 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate -divider -height 30 RX
+add wave -noupdate -divider Inputs
 add wave -noupdate /tb_ahb_usb/DUT/RX/clk
 add wave -noupdate /tb_ahb_usb/DUT/RX/n_rst
-add wave -noupdate /tb_ahb_usb/DUT/RX/dm_in
-add wave -noupdate /tb_ahb_usb/DUT/RX/dp_in
-add wave -noupdate /tb_ahb_usb/DUT/RX/buffer_occupancy
-add wave -noupdate /tb_ahb_usb/DUT/RX/rx_packet
-add wave -noupdate /tb_ahb_usb/DUT/RX/rx_data_ready
-add wave -noupdate /tb_ahb_usb/DUT/RX/rx_transfer_active
-add wave -noupdate /tb_ahb_usb/DUT/RX/rx_error
-add wave -noupdate /tb_ahb_usb/DUT/RX/store_rx_packet_data
-add wave -noupdate /tb_ahb_usb/DUT/RX/rx_packet_data
-add wave -noupdate /tb_ahb_usb/DUT/RX/flush
-add wave -noupdate /tb_ahb_usb/DUT/RX/dm
-add wave -noupdate /tb_ahb_usb/DUT/RX/dp
-add wave -noupdate /tb_ahb_usb/DUT/RX/new_edge
-add wave -noupdate /tb_ahb_usb/DUT/RX/eof
-add wave -noupdate /tb_ahb_usb/DUT/RX/data_out
-add wave -noupdate /tb_ahb_usb/DUT/RX/sample_the_data
-add wave -noupdate /tb_ahb_usb/DUT/RX/valid_bit
-add wave -noupdate /tb_ahb_usb/DUT/RX/start5
-add wave -noupdate /tb_ahb_usb/DUT/RX/start16
-add wave -noupdate /tb_ahb_usb/DUT/RX/error
+add wave -noupdate -color Goldenrod /tb_ahb_usb/DUT/RX/dm_in
+add wave -noupdate -color Goldenrod /tb_ahb_usb/DUT/RX/dp_in
+add wave -noupdate -color Goldenrod /tb_ahb_usb/DUT/RX/buffer_occupancy
+add wave -noupdate -divider Outputs
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/RX/rx_packet
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/RX/rx_data_ready
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/RX/rx_transfer_active
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/RX/rx_error
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/RX/store_rx_packet_data
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/RX/rx_packet_data
+add wave -noupdate -color Magenta /tb_ahb_usb/DUT/RX/flush
+add wave -noupdate -divider Intermediates
+add wave -noupdate /tb_ahb_usb/testname
+add wave -noupdate /tb_ahb_usb/DUT/RX/CTRLOGIC/state
 add wave -noupdate /tb_ahb_usb/DUT/RX/shift_reg_val
 add wave -noupdate /tb_ahb_usb/DUT/RX/crc16
 add wave -noupdate /tb_ahb_usb/DUT/RX/crc5
-add wave -noupdate /tb_ahb_usb/DUT/RX/CTRLOGIC/state
+add wave -noupdate -color {Medium Orchid} /tb_ahb_usb/DUT/RX/data_out
+add wave -noupdate -color {Medium Orchid} /tb_ahb_usb/DUT/RX/sample_the_data
+add wave -noupdate /tb_ahb_usb/DUT/RX/new_edge
+add wave -noupdate /tb_ahb_usb/DUT/RX/valid_bit
+add wave -noupdate /tb_ahb_usb/DUT/RX/eof
+add wave -noupdate /tb_ahb_usb/DUT/RX/dm
+add wave -noupdate /tb_ahb_usb/DUT/RX/dp
+add wave -noupdate /tb_ahb_usb/DUT/RX/start5
+add wave -noupdate /tb_ahb_usb/DUT/RX/start16
+add wave -noupdate /tb_ahb_usb/DUT/RX/error
 add wave -noupdate -divider -height 30 TX
 add wave -noupdate /tb_ahb_usb/DUT/TX/clk
 add wave -noupdate /tb_ahb_usb/DUT/TX/n_rst
