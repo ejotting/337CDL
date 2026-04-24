@@ -31,6 +31,7 @@ add wave -noupdate -divider -height 30 TX
 add wave -noupdate /tb_ahb_usb/DUT/TX/clk
 add wave -noupdate /tb_ahb_usb/DUT/TX/n_rst
 add wave -noupdate -color Yellow /tb_ahb_usb/DUT/TX/strobe
+add wave -noupdate -color Cyan /tb_ahb_usb/tx_testnames
 add wave -noupdate -divider {TX input}
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/TX/buffer_occupancy
 add wave -noupdate -radix binary /tb_ahb_usb/DUT/TX/tx_packet_data
@@ -140,7 +141,7 @@ add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/read_ptr
 add wave -noupdate -radix unsigned /tb_ahb_usb/DUT/DB/write_ptr
 add wave -noupdate /tb_ahb_usb/DUT/DB/queue
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {25022515 ps} 0}
+WaveRestoreCursors {{Cursor 1} {38642849 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -156,4 +157,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {24493339 ps} {25578150 ps}
+WaveRestoreZoom {29053426 ps} {49623744 ps}

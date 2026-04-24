@@ -34,6 +34,7 @@ module tb_ahb_usb ();
     logic [31:0] hrdata;
     logic hready, hresp;
     string testnames;
+    string tx_testnames;
     // clockgen
     always begin
         clk = 0;
@@ -318,12 +319,8 @@ module tb_ahb_usb ();
 
         testname = testcase5;
         send_DATA(dp_in,dm_in);
-<<<<<<< HEAD
 
         testname = testcase6;
-=======
-        
->>>>>>> b85e4732f6fc653fb630ade5ed7b4836fd25755c
         //AHB
         testnames="WRAP8 Read Start 0xE";
         ahb_burstwrap8(4'hE, mrx_data_wrap);
@@ -420,9 +417,10 @@ module tb_ahb_usb ();
         send_DATA(dp_in,dm_in);
         send_ACK(dp_in,dm_in);*/
         
-//TODO TESTING TX HERE
+//TESTING TX HERE
         testname = testcase7;
         //send DATA0 packet to induce bit stuffing while sending
+        tx_testnames = "DATA0 with Bit Stuffing (normal transmit)";
         $display("TX BIT STUFFING DATA0");
         @(negedge clk);
         hsel = 1;
@@ -454,12 +452,9 @@ module tb_ahb_usb ();
         while (!hready) @(negedge clk);
         repeat(1000) @(negedge clk);
 
-<<<<<<< HEAD
         
         testname = testcase8;
-=======
-        repeat(2000) @(negedge clk);
->>>>>>> b85e4732f6fc653fb630ade5ed7b4836fd25755c
+        tx_testnames = "DATA1 (normal transmit)";
         $display("TX DATA1");
         //normal test case of sending DATA0
         @(negedge clk);
@@ -505,6 +500,7 @@ module tb_ahb_usb ();
         repeat(1400) @(negedge clk);
 
         testname = testcase9;
+        tx_testnames = "ACK transmit";
         //send ACK packet
         @(negedge clk);
         hsel = 1;
@@ -523,6 +519,7 @@ module tb_ahb_usb ();
         repeat(300) @(negedge clk);
 
         testname = testcase10;
+        tx_testnames = "NAK transmit";
         //send NAK packet
         @(negedge clk);
         hsel = 1;
@@ -541,6 +538,7 @@ module tb_ahb_usb ();
         repeat(300) @(negedge clk);
 
         testname = testcase11;
+        tx_testnames = "STALL transmit";
         //send STALL packet
         @(negedge clk);
         hsel = 1;
@@ -559,6 +557,7 @@ module tb_ahb_usb ();
         repeat(300) @(negedge clk);
 
         testname = testcase12;
+        tx_testnames = "Induce TX error signal";
         //induce tx error
         @(negedge clk);
         hsel = 1;
