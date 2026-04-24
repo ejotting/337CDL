@@ -70,7 +70,7 @@ module ahb_subordinate_usb #(
    logic [ADDR_WIDTH-1:0] wrap_window, wrap_base;
 
 
-   logic addr_overflow;
+   logic addr_overflow, next_addr_overflow;
    logic [ADDR_WIDTH-1:0] prev_end_addr, current_end_addr; 
    logic raw_hazard;
    logic hazard_stall;
@@ -96,7 +96,7 @@ module ahb_subordinate_usb #(
        next_seq_addr=haddr_reg+addr_increment;
        wrap_base='0;
        wrap_window='0;
-       addr_overflow=0;
+       next_addr_overflow=0;
 
 
        if(hsel&&htrans==NONSEQ) begin
@@ -111,8 +111,8 @@ module ahb_subordinate_usb #(
        end else if(hsel &&htrans==SEQ) begin
            case(hburst_reg)
                INCR4, INCR8, INCR16: begin
-                   addr_overflow=(haddr_reg+addr_increment>=2**ADDR_WIDTH);
-                   if(addr_overflow) begin
+                   next_addr_overflow=(haddr_reg+addr_increment>=2**ADDR_WIDTH);
+                   if(next_addr_overflow) begin
                        next_beat_cnt='0;
                    end else begin
                        next_haddr_reg=haddr_reg+addr_increment;
@@ -157,8 +157,14 @@ module ahb_subordinate_usb #(
                        next_beat_cnt=beat_cnt-1;
                    end
                end
-               INCR: next_haddr_reg=haddr;
+               INCR: begin
+                    next_addr_overflow=(haddr_reg+addr_increment>=2**ADDR_WIDTH);
+                    if(!next_addr_overflow) begin
+                        next_haddr_reg=haddr;
+                    end
+               end
            endcase
+
        end else if(htrans==IDLE||!hsel) begin
            next_beat_cnt='0;
        end
@@ -397,6 +403,7 @@ module ahb_subordinate_usb #(
            hazard_stall<='0;
            state<=BYTE1;
            buffer<='0;
+           addr_overflow<='0;
        end else begin
            if(hready) begin
                hsel_reg<=hsel;
@@ -407,6 +414,7 @@ module ahb_subordinate_usb #(
                hwrite_reg<=hwrite;
                beat_cnt<=next_beat_cnt;
                burst_base_addr<=next_burst_base_addr;
+               addr_overflow<=next_addr_overflow;
            end
            error_state<=next_error_state;
            error_state2<=next_error_state2;
